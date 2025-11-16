@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- ===== CSS ===== -->
-    <link rel="stylesheet" href="frontend\assets\css\style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
 
     <!-- ===== BOX ICONS ===== -->
     <link
@@ -62,7 +62,7 @@
               />
             </div>
           </div>
-          <a href="#" class="form__forgot">Forgot Password?</a>
+          <a href="reset-password.html" class="form__forgot">Forgot Password?</a>
 
           <input
             type="submit"
@@ -78,19 +78,33 @@
 
     <!-- ===== MOCK LOGIN SCRIPT ===== -->
     <script>
-      function handleLogin(event) {
+      async function handleLogin(event) {
         event.preventDefault();
 
         const username = document.getElementById("username").value.trim();
         const password = document.getElementById("password").value.trim();
 
-        // 🔹 mock-up เงื่อนไขล็อกอินจำลอง
-        if (username === "admin" && password === "1234") {
-          // ✅ ไปหน้า home
-          window.location.href = "../home/index.html";
-        } else {
-          // ❌ แจ้งเตือนเมื่อกรอกผิด
-          alert("Invalid username or password");
+        try {
+          const response = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // ✅ Login successful - redirect to dashboard
+            window.location.href = "index.html";
+          } else {
+            // ❌ Login failed
+            alert(data.message || 'Invalid username or password');
+          }
+        } catch (error) {
+          console.error('Login error:', error);
+          alert('Cannot connect to server. Make sure the backend is running on http://localhost:5000');
         }
       }
     </script>
