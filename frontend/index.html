@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Management Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="frontend\assets\css\style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <!-- Sidebar -->
+  <aside>
+    <div class="logo">Stock<span class="highlight">Management</span></div>
+    <nav>
+      <h4>GENERAL</h4>
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Inventory</a>
+      <a href="#">Suppliers</a>
+      <a href="#">Reports</a>
+      <h4>SUPPORT</h4>
+      <a href="#">Help</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+
+    <section class="summary">
+      <div class="card"><h3>Products</h3><p>343</p></div>
+      <div class="card"><h3>Types</h3><p>23</p></div>
+    </section>
+
+    <section class="chart-container">
+      <canvas id="stockChart" height="100"></canvas>
+    </section>
+
+    <section>
+      <h3>Sales Orders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Channel</th>
+            <th>Draft</th>
+            <th>Confirmed</th>
+            <th>Packed</th>
+            <th>Shipped</th>
+            <th>Invoiced</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Direct Sales</td><td>2</td><td>32</td><td>42</td><td>23</td><td>7</td></tr>
+          <tr><td>Wholesale</td><td>0</td><td>41</td><td>33</td><td>11</td><td>14</td></tr>
+          <tr><td>Retail</td><td>2</td><td>12</td><td>25</td><td>16</td><td>21</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+<!-- Right Panel -->
+<div class="right-panel">
+  <div class="profile">
+    <img src="assets/img/1.png" alt="profile">
+    <div>
+      <strong>Anonymous</strong><br>
+      <small>Admin</small>
+    </div>
+  </div>
+
+  <!-- ✅ ปุ่ม Logout -->
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+  <!-- ===== SCRIPTS ===== -->
+  <!-- โหลด Chart.js ก่อน -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- โหลดสคริปต์ของกราฟ -->
+  <script src="assets/js/script.js"></script>
+
+  <!-- ===== LOGOUT FUNCTION ===== -->
+  <script>
+    function logout() {
+      // 🔹 แสดง popup ยืนยันก่อนออก
+      const confirmLogout = confirm("Are you sure you want to log out?");
+      if (confirmLogout) {
+        // กลับไปหน้า login
+        window.location.href = "../responsive-login-form-main/index.html";
+      }
+    }
+  </script>
+</body>
+</html>
+
