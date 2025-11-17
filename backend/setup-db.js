@@ -21,17 +21,25 @@ async function setupDatabase() {
     // Use the database
     await connection.query(`USE ${process.env.DB_NAME}`);
 
-    // Create users table with role (admin, staff)
+    // Create users table with role (admin, staff, user). Default to 'user' for new registrations.
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
-        role ENUM('admin', 'staff') DEFAULT 'staff',
+        role ENUM('admin', 'staff', 'user') DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+    // Ensure existing table (if present) has the 'user' enum value and default set to 'user'
+    try {
+      await connection.query(`ALTER TABLE users MODIFY role ENUM('admin','staff','user') DEFAULT 'user'`);
+      console.log('Users.role enum updated to include user');
+    } catch (err) {
+      // If ALTER fails (e.g., table doesn't exist yet), ignore — create above will handle it.
+    }
     console.log('Users table created or already exists');
 
     // Create password_resets table

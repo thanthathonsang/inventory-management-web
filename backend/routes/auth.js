@@ -28,7 +28,9 @@ transporter.verify((error, success) => {
 // Register endpoint
 router.post('/register', async (req, res) => {
   try {
-    const { username, password, email, role } = req.body;
+    // Do NOT accept a role from the client. Assign role = 'user' for all new registrations.
+    const { username, password, email } = req.body;
+    const role = 'user';
 
     // Basic validation
     if (!username || !password || !email) {
@@ -50,16 +52,16 @@ router.post('/register', async (req, res) => {
       // Hash password
       const hashed = await bcrypt.hash(password, 10);
 
-      // Insert user
+      // Insert user (role assigned server-side)
       const [result] = await connection.query(
         'INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)',
-        [username, hashed, email, role || 'staff']
+        [username, hashed, email, role]
       );
 
       res.status(201).json({
         success: true,
         message: 'User created',
-        user: { id: result.insertId, username, email, role: role || 'staff' }
+        user: { id: result.insertId, username, email, role }
       });
 
     } finally {

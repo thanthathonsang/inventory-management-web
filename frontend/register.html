@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="assets/css/style.css" />
+
+    <!-- ===== BOX ICONS ===== -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+
+    <title>Register</title>
+  </head>
+  <body>
+    <div class="l-form">
+      <div class="shape1"></div>
+      <div class="shape2"></div>
+
+      <div class="form">
+        <img src="assets/img/authentication.svg" alt="" class="form__img" />
+
+        <!-- ===== REGISTER FORM ===== -->
+        <form class="form__content" onsubmit="return handleRegister(event)">
+          <h1 class="form__title">Create account</h1>
+
+          <div class="form__div form__div-one">
+            <div class="form__icon">
+              <i class="bx bx-user-circle"></i>
+            </div>
+
+            <div class="form__div-input">
+              <label class="form__label">Username</label>
+              <input type="text" id="username" class="form__input" required />
+            </div>
+          </div>
+
+          <div class="form__div">
+            <div class="form__icon">
+              <i class="bx bx-envelope"></i>
+            </div>
+            <div class="form__div-input">
+              <label class="form__label">Email</label>
+              <input type="email" id="email" class="form__input" required />
+            </div>
+          </div>
+
+          <div class="form__div">
+            <div class="form__icon">
+              <i class="bx bx-lock"></i>
+            </div>
+
+            <div class="form__div-input">
+              <label class="form__label">Password</label>
+              <input type="password" id="password" class="form__input" required />
+            </div>
+          </div>
+
+          <div class="form__div">
+            <div class="form__icon">
+              <i class="bx bx-lock"></i>
+            </div>
+
+            <div class="form__div-input">
+              <label class="form__label">Confirm Password</label>
+              <input type="password" id="confirm" class="form__input" required />
+            </div>
+          </div>
+
+          <input type="submit" class="form__button btn-register" value="Register" />
+
+          <p style="margin-top:12px;text-align:center;">
+            <a href="login.html" class="form__forgot">Back to login</a>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== MAIN JS ===== -->
+    <script src="assets/js/main.js"></script>
+
+    <script>
+      async function handleRegister(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm').value;
+
+        if (!username || !email || !password) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        if (password !== confirm) {
+          alert('Passwords do not match');
+          return;
+        }
+
+        try {
+          const response = await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            alert('Registration successful — you can now log in');
+            window.location.href = 'login.html';
+          } else {
+            alert(data.message || 'Registration failed');
+          }
+        } catch (error) {
+          console.error('Register error:', error);
+          alert('Cannot connect to server. Make sure the backend is running on http://localhost:5000');
+        }
+      }
+    </script>
+  </body>
+</html>

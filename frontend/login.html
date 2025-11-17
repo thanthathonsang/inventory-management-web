@@ -62,14 +62,18 @@
               />
             </div>
           </div>
-          <a href="reset-password.html" class="form__forgot">Forgot Password?</a>
+          <div class="form__links">
+            <a href="register.html" class="form__create btn-create">Create account</a>
+            <a href="reset-password.html" class="form__forgot btn-forgot">Forgot Password?</a>
+          </div>
 
           <input
             type="submit"
-            class="form__button"
+            class="form__button btn-login"
             value="Login"
           />
         </form>
+        <!-- register link moved into login form -->
       </div>
     </div>
 
@@ -107,6 +111,8 @@
           alert('Cannot connect to server. Make sure the backend is running on http://localhost:5000');
         }
       }
+
+      // No inline registration on this page — registration lives on register.html
     </script>
   </body>
 </html>

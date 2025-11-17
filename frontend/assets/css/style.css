@@ -1,4 +1,4 @@
-/* index */
+index
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #f8f9fc;
@@ -363,6 +363,23 @@ img{
     color: var(--first-color);
     transition: .5s;
 }
+
+/* Links row: left = create account, right = forgot password */
+.form__links{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom: 2rem;
+}
+.form__create{
+  display:inline-block;
+  font-size: var(--normal-font-size);
+  color: var(--text-color);
+  font-weight:500;
+  text-decoration:none;
+}
+.form__create:hover{ color: var(--first-color); }
+.form__links .form__forgot{ text-align: right; margin:0; }
 .form__button{
     width: 100%;
     padding: 1rem;
@@ -378,6 +395,61 @@ img{
 }
 .form__button:hover{
     box-shadow: 0px 15px 36px rgba(0,0,0,.15);
+}
+
+/* Specific button/link classes (explicit colors, no CSS variables)
+   - .btn-create : the "Create account" link (left)
+   - .btn-forgot : the "Forgot Password?" link (right)
+   - .btn-login  : primary login button
+   - .btn-register : register page submit button
+*/
+.btn-create{
+  display:inline-block;
+  color:#6c2bd9; /* purple */
+  font-size:0.875rem;
+  font-weight:600;
+  text-decoration:none;
+  padding:0;
+}
+.btn-create:hover{ opacity:0.9; }
+
+.btn-forgot{
+  display:inline-block;
+  color:#8590AD; /* muted grey-blue */
+  font-size:0.875rem;
+  font-weight:500;
+  text-decoration:none;
+}
+.btn-forgot:hover{ color:#12192C; }
+
+.btn-login{
+  display:block;
+  width:100%;
+  background:#12192C; /* dark navy */
+  color:#ffffff;
+  padding:12px 16px;
+  border:none;
+  border-radius:8px;
+  font-size:0.938rem;
+  cursor:pointer;
+}
+.btn-login:hover{
+  box-shadow: 0 10px 30px rgba(18,25,44,0.18);
+}
+
+.btn-register{
+  display:block;
+  width:100%;
+  background:#12192C;
+  color:#ffffff;
+  padding:12px 16px;
+  border:none;
+  border-radius:8px;
+  font-size:0.938rem;
+  cursor:pointer;
+}
+.btn-register:hover{
+  box-shadow: 0 10px 30px rgba(18,25,44,0.18);
 }
 
 /*=== Form social===*/
