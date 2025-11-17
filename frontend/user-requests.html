@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Requests</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <style>
+    /* Table styling for user requests */
+    #requests-list table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      margin-top: 1rem;
+    }
+    #requests-list th,
+    #requests-list td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    #requests-list th {
+      background-color: #f1f4f9;
+      font-weight: 600;
+      color: #333;
+    }
+    #requests-list tr:hover {
+      background-color: #f9f9f9;
+    }
+    .role-select {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    .approve-btn {
+      margin-left: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #6c2bd9;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .approve-btn:hover {
+      background-color: #5621b8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside>
+    <div class="logo">Stock<span class="highlight">Management</span></div>
+    <nav>
+      <h4>GENERAL</h4>
+      <a href="index.html">Dashboard</a>
+      <a href="#">Inventory</a>
+      <a href="#">Suppliers</a>
+      <a href="#">Reports</a>
+      <h4>Manage User</h4>
+      <a href="user-requests.html" class="active">User Request</a>
+      <h4>SUPPORT</h4>
+      <a href="#">Help</a>
+      <a href="#">Settings</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <h2>User Requests</h2>
+    <p>New registrations pending admin approval are shown below.</p>
+
+    <div id="requests-list">
+      <!-- requests will be rendered here -->
+    </div>
+  </main>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="profile">
+      <img src="assets/img/1.png" alt="profile" />
+      <div>
+        <strong>Admin</strong><br />
+        <small>Administrator</small>
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    function logout() {
+      const confirmLogout = confirm("Are you sure you want to log out?");
+      if (confirmLogout) {
+        window.location.href = "login.html";
+      }
+    }
+
+    async function loadRequests() {
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/admin/requests');
+        const data = await res.json();
+        const container = document.getElementById('requests-list');
+        container.innerHTML = '';
+
+        if (!data.success) {
+          container.innerHTML = '<p>Error loading requests</p>';
+          return;
+        }
+
+        if (data.requests.length === 0) {
+          container.innerHTML = '<p>No pending requests</p>';
+          return;
+        }
+
+        const table = document.createElement('table');
+        table.innerHTML = `
+          <thead>
+            <tr><th>ID</th><th>Username</th><th>Email</th><th>Submitted</th><th>Action</th></tr>
+          </thead>
+          <tbody></tbody>
+        `;
+
+        const tbody = table.querySelector('tbody');
+
+        data.requests.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${r.id}</td>
+            <td>${r.username}</td>
+            <td>${r.email}</td>
+            <td>${new Date(r.created_at).toLocaleString()}</td>
+            <td>
+              <select class="role-select" data-id="${r.id}">
+                <option value="staff">Staff</option>
+                <option value="admin">Admin</option>
+              </select>
+              <button class="approve-btn" data-id="${r.id}">Approve</button>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        container.appendChild(table);
+
+        // attach handlers
+        document.querySelectorAll('.approve-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            const id = btn.getAttribute('data-id');
+            const select = document.querySelector(`.role-select[data-id="${id}"]`);
+            const role = select.value;
+            if (!confirm(`Approve request ${id} as ${role}?`)) return;
+            try {
+              const resp = await fetch('http://localhost:5000/api/auth/admin/approve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ requestId: parseInt(id,10), role })
+              });
+              const rdata = await resp.json();
+              if (rdata.success) {
+                alert('Approved');
+                loadRequests();
+              } else {
+                alert(rdata.message || 'Failed');
+              }
+            } catch (err) {
+              console.error(err);
+              alert('Server error');
+            }
+          });
+        });
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById('requests-list').innerHTML = '<p>Failed to load requests</p>';
+      }
+    }
+
+    loadRequests();
+  </script>
+</body>
+</html>

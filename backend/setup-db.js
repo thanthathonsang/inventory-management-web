@@ -56,6 +56,20 @@ async function setupDatabase() {
     `);
     console.log('Password resets table created or already exists');
 
+    // Create user_requests table to store pending registrations for admin approval
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS user_requests (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        processed TINYINT(1) DEFAULT 0,
+        processed_at DATETIME DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('User requests table created or already exists');
+
     // Check if admin user exists
     const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', ['admin']);
 

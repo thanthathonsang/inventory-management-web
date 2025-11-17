@@ -39,29 +39,32 @@ router.post('/register', async (req, res) => {
 
     const connection = await pool.getConnection();
     try {
-      // Check for existing username or email
-      const [existing] = await connection.query(
+      // Check for existing username or email in users or pending requests
+      const [existingUsers] = await connection.query(
         'SELECT id FROM users WHERE username = ? OR email = ?',
         [username, email]
       );
+      const [existingRequests] = await connection.query(
+        'SELECT id FROM user_requests WHERE username = ? OR email = ? AND processed = 0',
+        [username, email]
+      );
 
-      if (existing.length > 0) {
-        return res.status(409).json({ success: false, message: 'Username or email already exists' });
+      if (existingUsers.length > 0 || existingRequests.length > 0) {
+        return res.status(409).json({ success: false, message: 'Username or email already exists or pending' });
       }
 
-      // Hash password
+      // Hash password and save to user_requests for admin approval
       const hashed = await bcrypt.hash(password, 10);
 
-      // Insert user (role assigned server-side)
       const [result] = await connection.query(
-        'INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)',
-        [username, hashed, email, role]
+        'INSERT INTO user_requests (username, password, email) VALUES (?, ?, ?)',
+        [username, hashed, email]
       );
 
       res.status(201).json({
         success: true,
-        message: 'User created',
-        user: { id: result.insertId, username, email, role }
+        message: 'Registration submitted and pending admin approval',
+        request: { id: result.insertId, username, email }
       });
 
     } finally {
@@ -274,3 +277,49 @@ router.post('/confirm-reset', async (req, res) => {
 });
 
 module.exports = router;
+
+// Admin endpoints: list pending requests and approve
+router.get('/admin/requests', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.query('SELECT id, username, email, created_at FROM user_requests WHERE processed = 0 ORDER BY created_at ASC');
+      res.json({ success: true, requests: rows });
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error('List requests error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+router.post('/admin/approve', async (req, res) => {
+  try {
+    const { requestId, role } = req.body;
+    if (!requestId || !role) return res.status(400).json({ success: false, message: 'requestId and role are required' });
+    if (!['admin','staff'].includes(role)) return res.status(400).json({ success: false, message: 'Invalid role' });
+
+    const connection = await pool.getConnection();
+    try {
+      // Fetch request
+      const [rows] = await connection.query('SELECT id, username, email, password FROM user_requests WHERE id = ? AND processed = 0', [requestId]);
+      if (rows.length === 0) return res.status(404).json({ success: false, message: 'Request not found' });
+
+      const reqRow = rows[0];
+
+      // Insert into users table with chosen role
+      const [insertRes] = await connection.query('INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)', [reqRow.username, reqRow.password, reqRow.email, role]);
+
+      // Mark request processed
+      await connection.query('UPDATE user_requests SET processed = 1, processed_at = ? WHERE id = ?', [new Date(), requestId]);
+
+      return res.json({ success: true, message: 'User approved', userId: insertRes.insertId });
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error('Approve request error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
