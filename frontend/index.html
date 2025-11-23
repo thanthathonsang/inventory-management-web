@@ -3,96 +3,401 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Stock Management Dashboard</title>
+  <title>Doraemon Inventory - Dashboard</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#6c2bd9',
+            primary: '#18A0FB'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    /* Ensure brand logo uses the configured brand color even if other rules cascade */
+    .text-brand {
+      color: #6c2bd9 !important;
+    }
+    /* If logo contains nested elements, ensure they inherit the brand color */
+    .text-brand * {
+      color: inherit !important;
+    }
+    .dropdown-menu {
+      display: none;
+    }
+    .dropdown-menu.show {
+      display: block;
+    }
+  </style>
 </head>
 
-<body>
-  <!-- Sidebar -->
-  <aside>
-    <div class="logo">Stock<span class="highlight">Management</span></div>
-    <nav>
-      <h4>GENERAL</h4>
-      <a href="#" class="active">Dashboard</a>
-      <a href="#">Inventory</a>
-      <a href="#">Suppliers</a>
-      <a href="#">Reports</a>
-      <h4>Manage User</h4>
-      <a href="user-requests.html">User Request</a>
-      <h4>SUPPORT</h4>
-      <a href="#">Help</a>
-      <a href="#">Settings</a>
-    </nav>
-  </aside>
+<body class="bg-gray-50">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-gray-200 py-8 px-6 h-screen overflow-y-auto">
+      <div class="mb-10">
+        <div class="text-2xl font-extrabold text-brand">Doraemon <span class="text-brand">Inventory</span></div>
+      </div>
 
-  <!-- Main Content -->
-  <main>
+      <nav class="space-y-2 text-sm text-slate-700">
+        <div class="text-xs text-slate-400 uppercase mb-2">General</div>
+        <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-sky-500 text-white">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          <span>Inventory</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          <span>Reports</span>
+        </a>
 
-    <section class="summary">
-      <div class="card"><h3>Products</h3><p>343</p></div>
-      <div class="card"><h3>Types</h3><p>23</p></div>
-    </section>
+        <div class="mt-6 text-xs text-slate-400 uppercase">Manage User</div>
+        <a href="user-requests.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+          <span>User Request</span>
+        </a>
 
-    <section class="chart-container">
-      <canvas id="stockChart" height="100"></canvas>
-    </section>
+        <div class="mt-6 text-xs text-slate-400 uppercase">Support</div>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <span>Help</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
 
-    <section>
-      <h3>Sales Orders</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Channel</th>
-            <th>Draft</th>
-            <th>Confirmed</th>
-            <th>Packed</th>
-            <th>Shipped</th>
-            <th>Invoiced</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>Direct Sales</td><td>2</td><td>32</td><td>42</td><td>23</td><td>7</td></tr>
-          <tr><td>Wholesale</td><td>0</td><td>41</td><td>33</td><td>11</td><td>14</td></tr>
-          <tr><td>Retail</td><td>2</td><td>12</td><td>25</td><td>16</td><td>21</td></tr>
-        </tbody>
-      </table>
-    </section>
-  </main>
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="flex items-center justify-between bg-white border-b border-gray-200 px-8 py-4">
+        <div class="relative">
+          <input type="text" placeholder="Search" class="w-96 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-200" />
+          <svg class="w-5 h-5 absolute right-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/></svg>
+        </div>
 
-<!-- Right Panel -->
-<div class="right-panel">
-  <div class="profile">
-    <img src="assets/img/1.png" alt="profile">
-    <div>
-      <strong>Anonymous</strong><br>
-      <small>Admin</small>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <div id="avatarContainer" class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-lg font-bold overflow-hidden">
+              <span id="avatarInitial">U</span>
+              <img id="profileImage" class="hidden w-full h-full object-cover" alt="Profile" />
+            </div>
+            <div class="text-sm text-slate-600"><span id="displayUsername">Loading...</span><br/><span class="text-xs text-slate-400" id="displayRole">...</span></div>
+          </div>
+          <div class="relative">
+            <button id="menuButton" class="text-gray-400 hover:text-gray-600">⋮</button>
+            <div id="dropdownMenu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+              <a href="profile.html" class="block px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 rounded-t-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"/></svg>
+                Profile
+              </a>
+              <a href="#" onclick="logout()" class="block px-4 py-3 text-sm text-red-600 hover:bg-slate-50 rounded-b-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1"/></svg>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <div class="flex-1 overflow-auto px-8 py-8">
+        <div class="max-w-7xl mx-auto">
+          <!-- Sales Summary Cards -->
+          <div class="grid grid-cols-4 gap-4 mb-8">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-slate-400 mb-1">Today's Sale</div>
+                  <div class="text-2xl font-bold text-slate-700">163.3k</div>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-2xl"></div>
+              </div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-slate-400 mb-1">Yearly Total sales</div>
+                  <div class="text-2xl font-bold text-slate-700">$ 250,423</div>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-2xl"></div>
+              </div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-slate-400 mb-1">Net income</div>
+                  <div class="text-2xl font-bold text-slate-700">$68.9k</div>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-2xl"></div>
+              </div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-slate-400 mb-1">Products</div>
+                  <div class="text-2xl font-bold text-slate-700">343</div>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-pink-50 flex items-center justify-center text-2xl"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-6">
+            <!-- Main content (left, 2 cols) -->
+            <div class="col-span-2 space-y-6">
+              <!-- Stock Report -->
+              <div class="bg-white border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="font-semibold text-slate-700">Stock Report</h3>
+                  <div class="flex gap-2">
+                    <div class="flex items-center gap-2 text-sm">
+                      <div class="w-3 h-3 rounded-full bg-sky-400"></div>
+                      <span class="text-slate-600">Stock In</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm">
+                      <div class="w-3 h-3 rounded-full bg-purple-400"></div>
+                      <span class="text-slate-600">Stock Out</span>
+                    </div>
+                  </div>
+                </div>
+                <canvas id="stockChart" height="80"></canvas>
+              </div>
+
+              <!-- Sales Order Table -->
+              <div class="bg-white border border-gray-200 rounded-lg p-6">
+                <div class="flex items-center justify-between mb-6">
+                  <h3 class="font-semibold text-slate-700">Sales Order</h3>
+                  <button class="text-sky-500 text-sm font-medium">Last 7 Days ▼</button>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-sm">
+                    <thead>
+                      <tr class="border-b border-gray-200">
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Channel</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Draft</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Confirmed</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Packed</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Shipped</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Invoiced</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                      <tr>
+                        <td class="py-3 px-4 text-slate-600">Direct Sales</td>
+                        <td class="py-3 px-4 text-slate-600">2</td>
+                        <td class="py-3 px-4 text-slate-600">32</td>
+                        <td class="py-3 px-4 text-slate-600">42</td>
+                        <td class="py-3 px-4 text-slate-600">23</td>
+                        <td class="py-3 px-4 text-slate-600">7</td>
+                      </tr>
+                      <tr>
+                        <td class="py-3 px-4 text-slate-600">Wholesale</td>
+                        <td class="py-3 px-4 text-slate-600">0</td>
+                        <td class="py-3 px-4 text-slate-600">41</td>
+                        <td class="py-3 px-4 text-slate-600">33</td>
+                        <td class="py-3 px-4 text-slate-600">11</td>
+                        <td class="py-3 px-4 text-slate-600">14</td>
+                      </tr>
+                      <tr>
+                        <td class="py-3 px-4 text-slate-600">Retail</td>
+                        <td class="py-3 px-4 text-slate-600">2</td>
+                        <td class="py-3 px-4 text-slate-600">12</td>
+                        <td class="py-3 px-4 text-slate-600">25</td>
+                        <td class="py-3 px-4 text-slate-600">16</td>
+                        <td class="py-3 px-4 text-slate-600">21</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="space-y-6">
+              <!-- Quick Actions -->
+              <div class="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 class="font-semibold text-slate-700 mb-4">Quick Actions</h3>
+                <div class="space-y-3">
+                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Create Order</span>
+                    <span class="ml-auto text-xs text-slate-400">ctrl + o</span>
+                  </button>
+                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add Product</span>
+                    <span class="ml-auto text-xs text-slate-400">ctrl + p</span>
+                  </button>
+                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Add Supplier</span>
+                    <span class="ml-auto text-xs text-slate-400">ctrl + k</span>
+                  </button>
+                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2z"/></svg>
+                    <span>Export</span>
+                    <span class="ml-auto text-xs text-slate-400">ctrl + s</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Fast Moving Items -->
+              <div class="bg-white border border-gray-200 rounded-lg p-6">
+                <h3 class="font-semibold text-slate-700 mb-4">Fast Moving Items</h3>
+                <div class="space-y-3">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Macbook Pro</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">iPhone 14 pro</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Zoom75</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Airpods Pro</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Samsung Galaxy Fold</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Samsung Odyssey</span>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
+                    <span class="text-sm text-slate-600">Logitech Superlight</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ ปุ่ม Logout -->
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</div>
-
-  <!-- ===== SCRIPTS ===== -->
-  <!-- โหลด Chart.js ก่อน -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- โหลดสคริปต์ของกราฟ -->
-  <script src="assets/js/script.js"></script>
-
-  <!-- ===== LOGOUT FUNCTION ===== -->
   <script>
+    // Check if user is logged in
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
+    if (!userId || !username) {
+      // Not logged in, redirect to login page
+      window.location.href = 'login.html';
+    } else {
+      // Display user info
+      document.getElementById('displayUsername').textContent = username;
+      document.getElementById('displayRole').textContent = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User';
+      
+      // Load profile picture
+      loadUserProfile();
+    }
+
+    // Load user profile data
+    async function loadUserProfile() {
+      try {
+        const response = await fetch(`http://localhost:5000/api/auth/me?userId=${userId}`);
+        const data = await response.json();
+
+        if (data.success && data.user) {
+          const user = data.user;
+          
+          // Update avatar initial
+          document.getElementById('avatarInitial').textContent = user.username.charAt(0).toUpperCase();
+
+          // Update profile picture if exists
+          if (user.profile_picture) {
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = user.profile_picture;
+            profileImage.classList.remove('hidden');
+            document.getElementById('avatarInitial').classList.add('hidden');
+          }
+        }
+      } catch (error) {
+        console.error('Load profile error:', error);
+      }
+    }
+
+    // Dropdown menu toggle
+    const menuButton = document.getElementById('menuButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!menuButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+
+    // Logout function
     function logout() {
-      // 🔹 แสดง popup ยืนยันก่อนออก
       const confirmLogout = confirm("Are you sure you want to log out?");
       if (confirmLogout) {
-        // กลับไปหน้า login
+        // Clear user data from localStorage
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
         window.location.href = "login.html";
       }
+    }
+
+    // Chart data
+    const ctx = document.getElementById('stockChart');
+    if (ctx) {
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [
+            {
+              label: 'Stock In',
+              data: [5000, 8000, 7000, 9000, 6000, 7500, 8500, 7000, 8000, 6500, 7000, 5500],
+              backgroundColor: '#60a5fa',
+              borderRadius: 4
+            },
+            {
+              label: 'Stock Out',
+              data: [3000, 5000, 4500, 6000, 4000, 5000, 6000, 4500, 5500, 4000, 4500, 3500],
+              backgroundColor: '#a78bfa',
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, beginAtZero: true }
+          },
+          plugins: { legend: { display: false } }
+        }
+      });
     }
   </script>
 </body>
 </html>
-

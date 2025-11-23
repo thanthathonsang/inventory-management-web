@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doraemon Inventory - Profile</title>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: '#6c2bd9',
+            primary: '#18A0FB'
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .text-brand {
+      color: #6c2bd9 !important;
+    }
+    .text-brand * {
+      color: inherit !important;
+    }
+    .dropdown-menu {
+      display: none;
+    }
+    .dropdown-menu.show {
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-72 bg-white border-r border-gray-200 py-8 px-6 h-screen overflow-y-auto">
+      <div class="mb-10">
+        <div class="text-2xl font-extrabold text-brand">Doraemon <span class="text-brand">Inventory</span></div>
+      </div>
+
+      <nav class="space-y-2 text-sm text-slate-700">
+        <div class="text-xs text-slate-400 uppercase mb-2">General</div>
+        <a href="index.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="inventory.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
+          <span>Inventory</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          <span>Reports</span>
+        </a>
+
+        <div class="mt-6 text-xs text-slate-400 uppercase">Manage User</div>
+        <a href="user-requests.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
+          <span>User Request</span>
+        </a>
+
+        <div class="mt-6 text-xs text-slate-400 uppercase">Support</div>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <span>Help</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <span>Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main content -->
+    <div class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="flex items-center justify-between bg-white border-b border-gray-200 px-8 py-4">
+        <div class="relative">
+          <input type="text" placeholder="Search" class="w-96 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-200" />
+          <svg class="w-5 h-5 absolute right-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/></svg>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+            <div class="text-sm text-slate-600"><span id="displayUsername">Loading...</span><br/><span class="text-xs text-slate-400" id="displayRole">...</span></div>
+          </div>
+          <div class="relative">
+            <button id="menuButton" class="text-gray-400 hover:text-gray-600">⋮</button>
+            <div id="dropdownMenu" class="dropdown-menu absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+              <a href="profile.html" class="block px-4 py-3 text-sm text-slate-600 hover:bg-slate-50 rounded-t-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"/></svg>
+                Profile
+              </a>
+              <a href="#" onclick="logout()" class="block px-4 py-3 text-sm text-red-600 hover:bg-slate-50 rounded-b-lg">
+                <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1"/></svg>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page content -->
+      <div class="flex-1 overflow-auto px-8 py-8">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-2xl font-bold text-slate-700 mb-6">My Profile</h2>
+
+          <!-- Profile Card -->
+          <div class="bg-white border border-gray-200 rounded-lg p-8 mb-6">
+            <div class="flex items-center gap-6 mb-8">
+              <div class="relative">
+                <div id="avatarContainer" class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-4xl font-bold overflow-hidden">
+                  <span id="avatarInitial">U</span>
+                  <img id="profileImage" class="hidden w-full h-full object-cover" alt="Profile" />
+                </div>
+                <button onclick="document.getElementById('fileInput').click()" class="absolute bottom-0 right-0 w-8 h-8 bg-brand text-white rounded-full flex items-center justify-center hover:bg-purple-700 transition shadow-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                </button>
+                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileUpload(event)" />
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-slate-700" id="profileUsername">Loading...</h3>
+                <p class="text-slate-500" id="profileEmail">loading@example.com</p>
+                <span class="inline-block mt-2 px-3 py-1 bg-purple-100 text-brand text-sm font-medium rounded-full" id="profileRole">User</span>
+              </div>
+            </div>
+
+            <!-- Profile Form -->
+            <form id="profileForm" class="space-y-6">
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
+                  <input type="text" id="username" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed" readonly />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                  <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">First Name</label>
+                  <input type="text" id="firstname" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Last Name</label>
+                  <input type="text" id="lastname" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Role</label>
+                  <input type="text" id="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed" readonly />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-slate-700 mb-2">Member Since</label>
+                  <input type="text" id="createdAt" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed" readonly />
+                </div>
+              </div>
+
+              <div class="pt-6 mt-6 border-t border-gray-200">
+                <button type="submit" class="px-8 py-3 bg-brand text-black rounded-lg font-semibold hover:bg-purple-700 transition shadow-lg text-base">
+                  Update Profile
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Change Password Card -->
+          <div class="bg-white border border-gray-200 rounded-lg p-8">
+            <h3 class="text-lg font-bold text-slate-700 mb-6">Change Password</h3>
+            <form id="passwordForm" class="space-y-6">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Current Password</label>
+                <input type="password" id="currentPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">New Password</label>
+                <input type="password" id="newPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" required />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Confirm New Password</label>
+                <input type="password" id="confirmPassword" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" required />
+              </div>
+              <div class="pt-6 mt-6 border-t border-gray-200">
+                <button type="submit" class="px-8 py-3 bg-sky-500 text-white rounded-lg font-semibold hover:bg-sky-600 transition shadow-lg text-base">
+                  Change Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if user is logged in
+    const userId = localStorage.getItem('userId');
+    const username = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
+    if (!userId || !username) {
+      window.location.href = 'login.html';
+    } else {
+      // Display user info in header
+      document.getElementById('displayUsername').textContent = username;
+      document.getElementById('displayRole').textContent = role ? role.charAt(0).toUpperCase() + role.slice(1) : 'User';
+    }
+
+    // Dropdown menu toggle
+    const menuButton = document.getElementById('menuButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    menuButton.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!menuButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+        dropdownMenu.classList.remove('show');
+      }
+    });
+
+    // Logout function
+    function logout() {
+      const confirmLogout = confirm("Are you sure you want to log out?");
+      if (confirmLogout) {
+        localStorage.removeItem('userId');
+        localStorage.removeItem('username');
+        localStorage.removeItem('role');
+        window.location.href = "login.html";
+      }
+    }
+
+    // Load profile data
+    async function loadProfile() {
+      try {
+        const API_URL = `http://${window.location.hostname}:5000`;
+        const response = await fetch(`${API_URL}/api/auth/me?userId=${userId}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const user = data.user;
+          
+          // Update profile display
+          document.getElementById('profileUsername').textContent = user.username;
+          document.getElementById('profileEmail').textContent = user.email;
+          document.getElementById('profileRole').textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+          document.getElementById('avatarInitial').textContent = user.username.charAt(0).toUpperCase();
+
+          // Update profile picture if exists
+          if (user.profile_picture) {
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = user.profile_picture;
+            profileImage.classList.remove('hidden');
+            document.getElementById('avatarInitial').classList.add('hidden');
+          }
+
+          // Update form fields
+          document.getElementById('username').value = user.username;
+          document.getElementById('email').value = user.email;
+          document.getElementById('firstname').value = user.firstname || '';
+          document.getElementById('lastname').value = user.lastname || '';
+          document.getElementById('role').value = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+          document.getElementById('createdAt').value = new Date(user.created_at).toLocaleDateString();
+        } else {
+          alert('Failed to load profile');
+        }
+      } catch (error) {
+        console.error('Load profile error:', error);
+        alert('Cannot connect to server');
+      }
+    }
+
+    // Update profile
+    document.getElementById('profileForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value;
+      const firstname = document.getElementById('firstname').value;
+      const lastname = document.getElementById('lastname').value;
+
+      try {
+        const API_URL = `http://${window.location.hostname}:5000`;
+        const response = await fetch(`${API_URL}/api/auth/update-profile`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId, email, firstname, lastname })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Profile updated successfully!');
+          loadProfile();
+        } else {
+          alert(data.message || 'Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Update profile error:', error);
+        alert('Cannot connect to server');
+      }
+    });
+
+    // Change password
+    document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const currentPassword = document.getElementById('currentPassword').value;
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword !== confirmPassword) {
+        alert('New passwords do not match!');
+        return;
+      }
+
+      try {
+        const API_URL = `http://${window.location.hostname}:5000`;
+        const response = await fetch(`${API_URL}/api/auth/change-password`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ userId, currentPassword, newPassword })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Password changed successfully!');
+          document.getElementById('passwordForm').reset();
+        } else {
+          alert(data.message || 'Failed to change password');
+        }
+      } catch (error) {
+        console.error('Change password error:', error);
+        alert('Cannot connect to server');
+      }
+    });
+
+    // Handle file upload
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5MB');
+        return;
+      }
+
+      // Read file as base64
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        const base64Image = e.target.result;
+
+        try {
+          const API_URL = `http://${window.location.hostname}:5000`;
+          const response = await fetch(`${API_URL}/api/auth/upload-profile-picture`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId, profilePicture: base64Image })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Update profile image immediately
+            const profileImage = document.getElementById('profileImage');
+            profileImage.src = base64Image;
+            profileImage.classList.remove('hidden');
+            document.getElementById('avatarInitial').classList.add('hidden');
+            
+            alert('Profile picture updated successfully!');
+          } else {
+            alert(data.message || 'Failed to upload profile picture');
+          }
+        } catch (error) {
+          console.error('Upload error:', error);
+          alert('Cannot connect to server');
+        }
+      };
+      
+      reader.readAsDataURL(file);
+    }
+
+    // Load profile on page load
+    loadProfile();
+  </script>
+</body>
+</html>

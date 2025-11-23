@@ -28,6 +28,8 @@ async function setupDatabase() {
         username VARCHAR(50) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
         email VARCHAR(100) UNIQUE NOT NULL,
+        firstname VARCHAR(100) DEFAULT NULL,
+        lastname VARCHAR(100) DEFAULT NULL,
         role ENUM('admin', 'staff', 'user') DEFAULT 'user',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -39,6 +41,53 @@ async function setupDatabase() {
       console.log('Users.role enum updated to include user');
     } catch (err) {
       // If ALTER fails (e.g., table doesn't exist yet), ignore — create above will handle it.
+    }
+
+    // Add firstname and lastname columns if they don't exist
+    try {
+      // Check and add firstname
+      const [firstnameCheck] = await connection.query(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'firstname'",
+        [process.env.DB_NAME]
+      );
+      if (firstnameCheck.length === 0) {
+        await connection.query(`ALTER TABLE users ADD COLUMN firstname VARCHAR(100) DEFAULT NULL`);
+        console.log('Firstname column added');
+      }
+
+      // Check and add lastname
+      const [lastnameCheck] = await connection.query(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'lastname'",
+        [process.env.DB_NAME]
+      );
+      if (lastnameCheck.length === 0) {
+        await connection.query(`ALTER TABLE users ADD COLUMN lastname VARCHAR(100) DEFAULT NULL`);
+        console.log('Lastname column added');
+      }
+
+      // Check and add profile_picture
+      const [profilePicCheck] = await connection.query(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'profile_picture'",
+        [process.env.DB_NAME]
+      );
+      if (profilePicCheck.length === 0) {
+        await connection.query(`ALTER TABLE users ADD COLUMN profile_picture LONGTEXT DEFAULT NULL`);
+        console.log('Profile_picture column added');
+      } else {
+        // Check if column type is TEXT and needs to be changed to LONGTEXT
+        const [columnInfo] = await connection.query(
+          "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'users' AND COLUMN_NAME = 'profile_picture'",
+          [process.env.DB_NAME]
+        );
+        if (columnInfo.length > 0 && columnInfo[0].DATA_TYPE === 'text') {
+          await connection.query(`ALTER TABLE users MODIFY COLUMN profile_picture LONGTEXT DEFAULT NULL`);
+          console.log('Profile_picture column modified to LONGTEXT');
+        }
+      }
+
+      console.log('All columns verified/added successfully');
+    } catch (err) {
+      console.error('Error adding columns:', err);
     }
     console.log('Users table created or already exists');
 

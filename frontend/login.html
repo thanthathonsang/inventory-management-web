@@ -100,7 +100,12 @@
           const data = await response.json();
 
           if (data.success) {
-            // ✅ Login successful - redirect to dashboard
+            // ✅ Login successful - save user info to localStorage
+            localStorage.setItem('userId', data.user.id);
+            localStorage.setItem('username', data.user.username);
+            localStorage.setItem('role', data.user.role);
+            
+            // Redirect to dashboard
             window.location.href = "index.html";
           } else {
             // ❌ Login failed

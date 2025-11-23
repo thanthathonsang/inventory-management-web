@@ -37,15 +37,41 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'username, email and password are required' });
     }
 
+    // Input validation to prevent SQL injection
+    if (typeof username !== 'string' || typeof password !== 'string' || typeof email !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid input format' });
+    }
+
+    // Sanitize username - only allow alphanumeric, underscore, and hyphen
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ success: false, message: 'Username can only contain letters, numbers, underscore and hyphen' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Invalid email format' });
+    }
+
+    // Limit length
+    if (username.length > 50 || password.length > 255 || email.length > 100) {
+      return res.status(400).json({ success: false, message: 'Input too long' });
+    }
+
+    // Minimum password length
+    if (password.length < 4) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 4 characters' });
+    }
+
     const connection = await pool.getConnection();
     try {
-      // Check for existing username or email in users or pending requests
+      // Check for existing username or email in users or pending requests (case-sensitive)
       const [existingUsers] = await connection.query(
-        'SELECT id FROM users WHERE username = ? OR email = ?',
+        'SELECT id FROM users WHERE BINARY username = ? OR BINARY email = ?',
         [username, email]
       );
       const [existingRequests] = await connection.query(
-        'SELECT id FROM user_requests WHERE username = ? OR email = ? AND processed = 0',
+        'SELECT id FROM user_requests WHERE BINARY username = ? OR BINARY email = ? AND processed = 0',
         [username, email]
       );
 
@@ -88,14 +114,28 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username and password are required' });
     }
 
+    // Input validation to prevent SQL injection
+    if (typeof username !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid input format' });
+    }
+
+    // Sanitize username - only allow alphanumeric, underscore, and hyphen
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ success: false, message: 'Username contains invalid characters' });
+    }
+
+    // Limit length to prevent buffer overflow attacks
+    if (username.length > 50 || password.length > 255) {
+      return res.status(400).json({ success: false, message: 'Input too long' });
+    }
+
     // Get connection from pool
     const connection = await pool.getConnection();
 
     try {
-      // Query user from database
+      // Query user from database with BINARY for case-sensitive comparison
       const [rows] = await connection.query(
-        'SELECT id, username, password, role FROM users WHERE username = ?'
-,
+        'SELECT id, username, password, role FROM users WHERE BINARY username = ?',
         [username]
       );
 
@@ -104,6 +144,11 @@ router.post('/login', async (req, res) => {
       }
 
       const user = rows[0];
+
+      // Verify exact case-sensitive match
+      if (user.username !== username) {
+        return res.status(401).json({ success: false, message: 'Invalid username or password' });
+      }
 
       // Compare password with bcrypt hash
       const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -323,3 +368,254 @@ router.post('/admin/approve', async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+// Get current user info (requires userId in query param or session)
+router.get('/me', async (req, res) => {
+  try {
+    const userId = req.query.userId; // In production, use session/JWT token
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'userId is required' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      const [rows] = await connection.query(
+        'SELECT id, username, email, firstname, lastname, role, profile_picture, created_at FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      res.json({
+        success: true,
+        user: rows[0]
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (err) {
+    console.error('Get user error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Update user profile (email, firstname, lastname)
+router.put('/update-profile', async (req, res) => {
+  try {
+    const { userId, email, firstname, lastname } = req.body;
+
+    if (!userId || !email) {
+      return res.status(400).json({ success: false, message: 'userId and email are required' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      // Check if email is already used by another user
+      const [existing] = await connection.query(
+        'SELECT id FROM users WHERE email = ? AND id != ?',
+        [email, userId]
+      );
+
+      if (existing.length > 0) {
+        return res.status(409).json({ success: false, message: 'Email already in use' });
+      }
+
+      // Update email, firstname, lastname
+      await connection.query(
+        'UPDATE users SET email = ?, firstname = ?, lastname = ? WHERE id = ?',
+        [email, firstname || null, lastname || null, userId]
+      );
+
+      res.json({
+        success: true,
+        message: 'Profile updated successfully'
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Change password
+router.put('/change-password', async (req, res) => {
+  try {
+    const { userId, currentPassword, newPassword } = req.body;
+
+    if (!userId || !currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      // Get current password hash
+      const [rows] = await connection.query(
+        'SELECT password FROM users WHERE id = ?',
+        [userId]
+      );
+
+      if (rows.length === 0) {
+        return res.status(404).json({ success: false, message: 'User not found' });
+      }
+
+      // Verify current password
+      const isValid = await bcrypt.compare(currentPassword, rows[0].password);
+
+      if (!isValid) {
+        return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+      }
+
+      // Hash new password and update
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await connection.query(
+        'UPDATE users SET password = ? WHERE id = ?',
+        [hashedPassword, userId]
+      );
+
+      res.json({
+        success: true,
+        message: 'Password changed successfully'
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Upload profile picture (base64)
+router.put('/upload-profile-picture', async (req, res) => {
+  try {
+    const { userId, profilePicture } = req.body;
+
+    if (!userId || !profilePicture) {
+      return res.status(400).json({ success: false, message: 'userId and profilePicture are required' });
+    }
+
+    // Validate base64 image format
+    if (!profilePicture.startsWith('data:image/')) {
+      return res.status(400).json({ success: false, message: 'Invalid image format' });
+    }
+
+    // Limit image size (approximately 5MB in base64)
+    if (profilePicture.length > 7000000) {
+      return res.status(400).json({ success: false, message: 'Image too large. Maximum 5MB' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      await connection.query(
+        'UPDATE users SET profile_picture = ? WHERE id = ?',
+        [profilePicture, userId]
+      );
+
+      res.json({
+        success: true,
+        message: 'Profile picture updated successfully'
+      });
+
+    } finally {
+      connection.release();
+    }
+
+  } catch (err) {
+    console.error('Upload profile picture error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Create user directly (for admin or testing - no approval needed)
+router.post('/create-user-direct', async (req, res) => {
+  try {
+    const { username, password, email, firstname, lastname, role } = req.body;
+    
+    // Validate required fields
+    if (!username || !password || !email) {
+      return res.status(400).json({ success: false, message: 'username, password, and email are required' });
+    }
+
+    // Input validation to prevent SQL injection
+    if (typeof username !== 'string' || typeof password !== 'string' || typeof email !== 'string') {
+      return res.status(400).json({ success: false, message: 'Invalid input format' });
+    }
+
+    // Sanitize inputs
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ success: false, message: 'Username contains invalid characters' });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: 'Invalid email format' });
+    }
+
+    // Validate firstname and lastname if provided
+    if (firstname && (typeof firstname !== 'string' || firstname.length > 100)) {
+      return res.status(400).json({ success: false, message: 'Invalid firstname' });
+    }
+    if (lastname && (typeof lastname !== 'string' || lastname.length > 100)) {
+      return res.status(400).json({ success: false, message: 'Invalid lastname' });
+    }
+
+    // Validate role
+    const validRoles = ['admin', 'staff', 'user'];
+    if (role && !validRoles.includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' });
+    }
+
+    const connection = await pool.getConnection();
+    try {
+      // Check if username or email already exists (case-sensitive)
+      const [existing] = await connection.query(
+        'SELECT id FROM users WHERE BINARY username = ? OR BINARY email = ?',
+        [username, email]
+      );
+
+      if (existing.length > 0) {
+        return res.status(409).json({ success: false, message: 'Username or email already exists' });
+      }
+
+      // Hash password
+      const hashed = await bcrypt.hash(password, 10);
+      
+      // Insert new user
+      const [result] = await connection.query(
+        'INSERT INTO users (username, password, email, firstname, lastname, role) VALUES (?, ?, ?, ?, ?, ?)',
+        [username, hashed, email, firstname || null, lastname || null, role || 'user']
+      );
+      
+      res.status(201).json({ 
+        success: true, 
+        message: 'User created successfully',
+        user: {
+          id: result.insertId,
+          username,
+          email,
+          firstname,
+          lastname,
+          role: role || 'user'
+        }
+      });
+
+    } finally {
+      connection.release();
+    }
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
