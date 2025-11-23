@@ -63,6 +63,10 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 12h18M3 17h18"/></svg>
           <span>Inventory</span>
         </a>
+        <a href="stock-history.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          <span>Stock History</span>
+        </a>
         <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
           <span>Reports</span>
@@ -276,6 +280,79 @@
     </div>
   </div>
 
+  <!-- Stock Movement Modal (Stock In / Stock Out) -->
+  <div id="stockModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 w-full max-w-lg">
+      <div class="flex items-center justify-between mb-6">
+        <h2 id="stockModalTitle" class="text-2xl font-bold text-slate-700">Stock In</h2>
+        <button type="button" onclick="closeStockModal()" class="text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <form id="stockForm" onsubmit="handleStockSubmit(event)">
+        <input type="hidden" id="stockProductId" />
+        <input type="hidden" id="stockType" />
+        
+        <!-- Product Info -->
+        <div class="mb-4 p-4 bg-gray-50 rounded-lg">
+          <div class="text-sm text-gray-600 mb-1">Product</div>
+          <div class="font-semibold text-slate-700" id="stockProductName"></div>
+          <div class="text-sm text-gray-500 mt-1">
+            Current Stock: <span id="stockCurrentQuantity" class="font-medium text-slate-700"></span>
+          </div>
+        </div>
+
+        <!-- Quantity Input -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-slate-700 mb-2">
+            Quantity <span class="text-red-500">*</span>
+          </label>
+          <input type="number" id="stockQuantity" min="1" required 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" 
+            placeholder="Enter quantity" />
+          <div id="stockQuantityWarning" class="hidden mt-1 text-sm text-orange-600">
+            ⚠ Warning: Quantity exceeds current stock
+          </div>
+        </div>
+
+        <!-- Reference Number -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-slate-700 mb-2">
+            Reference Number <span class="text-gray-400 text-xs">(Optional)</span>
+          </label>
+          <input type="text" id="stockReference" 
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" 
+            placeholder="e.g., PO-2024-001" />
+        </div>
+
+        <!-- Notes -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-slate-700 mb-2">
+            Notes <span class="text-gray-400 text-xs">(Optional)</span>
+          </label>
+          <textarea id="stockNotes" rows="3"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" 
+            placeholder="Additional information..."></textarea>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3 justify-end">
+          <button type="button" onclick="closeStockModal()" 
+            class="px-6 py-2 border border-gray-300 rounded-lg text-slate-600 hover:bg-slate-50">
+            Cancel
+          </button>
+          <button type="submit" id="stockSubmitBtn"
+            class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg">
+            Confirm Stock In
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
     // Alert System
     function showAlert(message, type = 'info') {
@@ -469,10 +546,16 @@
           <td class="py-3 px-4 text-slate-600">${product.quantity}</td>
           <td class="py-3 px-4">
             <div class="flex gap-2">
-              <button onclick="editProduct(${product.id})" class="text-blue-500 hover:text-blue-700">
+              <button onclick="openStockInModal(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.quantity})" class="text-green-500 hover:text-green-700" title="Stock In">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+              </button>
+              <button onclick="openStockOutModal(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.quantity})" class="text-orange-500 hover:text-orange-700" title="Stock Out">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+              </button>
+              <button onclick="editProduct(${product.id})" class="text-blue-500 hover:text-blue-700" title="Edit">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
               </button>
-              <button onclick="deleteProduct(${product.id})" class="text-red-500 hover:text-red-700">
+              <button onclick="deleteProduct(${product.id})" class="text-red-500 hover:text-red-700" title="Delete">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
               </button>
             </div>
@@ -838,6 +921,129 @@
 
     // Load products on page load
     loadProducts();
+
+    // ===== Stock Management Functions =====
+    let currentStockProduct = { id: null, name: '', currentQuantity: 0 };
+
+    // Open Stock In Modal
+    function openStockInModal(productId, productName, currentQuantity) {
+      currentStockProduct = { id: productId, name: productName, currentQuantity };
+      
+      document.getElementById('stockModalTitle').textContent = 'Stock In';
+      document.getElementById('stockProductId').value = productId;
+      document.getElementById('stockType').value = 'in';
+      document.getElementById('stockProductName').textContent = productName;
+      document.getElementById('stockCurrentQuantity').textContent = currentQuantity;
+      document.getElementById('stockQuantity').value = '';
+      document.getElementById('stockReference').value = '';
+      document.getElementById('stockNotes').value = '';
+      document.getElementById('stockQuantityWarning').classList.add('hidden');
+      
+      // Update button style for Stock In
+      const submitBtn = document.getElementById('stockSubmitBtn');
+      submitBtn.textContent = 'Confirm Stock In';
+      submitBtn.className = 'px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg';
+      
+      document.getElementById('stockModal').classList.add('show');
+    }
+
+    // Open Stock Out Modal
+    function openStockOutModal(productId, productName, currentQuantity) {
+      currentStockProduct = { id: productId, name: productName, currentQuantity };
+      
+      document.getElementById('stockModalTitle').textContent = 'Stock Out';
+      document.getElementById('stockProductId').value = productId;
+      document.getElementById('stockType').value = 'out';
+      document.getElementById('stockProductName').textContent = productName;
+      document.getElementById('stockCurrentQuantity').textContent = currentQuantity;
+      document.getElementById('stockQuantity').value = '';
+      document.getElementById('stockReference').value = '';
+      document.getElementById('stockNotes').value = '';
+      document.getElementById('stockQuantityWarning').classList.add('hidden');
+      
+      // Update button style for Stock Out
+      const submitBtn = document.getElementById('stockSubmitBtn');
+      submitBtn.textContent = 'Confirm Stock Out';
+      submitBtn.className = 'px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg';
+      
+      document.getElementById('stockModal').classList.add('show');
+    }
+
+    // Close Stock Modal
+    function closeStockModal() {
+      document.getElementById('stockModal').classList.remove('show');
+      currentStockProduct = { id: null, name: '', currentQuantity: 0 };
+    }
+
+    // Monitor quantity input for Stock Out warning
+    document.getElementById('stockQuantity').addEventListener('input', (e) => {
+      const stockType = document.getElementById('stockType').value;
+      const quantity = parseInt(e.target.value) || 0;
+      const warning = document.getElementById('stockQuantityWarning');
+      
+      if (stockType === 'out' && quantity > currentStockProduct.currentQuantity) {
+        warning.classList.remove('hidden');
+      } else {
+        warning.classList.add('hidden');
+      }
+    });
+
+    // Handle Stock Form Submit
+    async function handleStockSubmit(event) {
+      event.preventDefault();
+
+      const productId = document.getElementById('stockProductId').value;
+      const stockType = document.getElementById('stockType').value;
+      const quantity = parseInt(document.getElementById('stockQuantity').value);
+      const reference = document.getElementById('stockReference').value.trim();
+      const notes = document.getElementById('stockNotes').value.trim();
+
+      // Validate quantity for stock out
+      if (stockType === 'out' && quantity > currentStockProduct.currentQuantity) {
+        const confirmProceed = confirm(
+          `Warning: Requested quantity (${quantity}) exceeds current stock (${currentStockProduct.currentQuantity}).\n\n` +
+          `This will result in negative stock. Do you want to proceed?`
+        );
+        
+        if (!confirmProceed) {
+          return;
+        }
+      }
+
+      const stockData = {
+        product_id: productId,
+        quantity: quantity,
+        reference_number: reference || null,
+        notes: notes || null,
+        created_by: username || null
+      };
+
+      try {
+        const endpoint = stockType === 'in' 
+          ? 'http://localhost:5000/api/stock/in' 
+          : 'http://localhost:5000/api/stock/out';
+
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(stockData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const actionText = stockType === 'in' ? 'Stock In' : 'Stock Out';
+          showAlert(`${actionText} successful! ${currentStockProduct.name}: ${quantity} units`, 'success');
+          closeStockModal();
+          loadProducts(); // Reload products to show updated quantity
+        } else {
+          showAlert(data.message || 'Failed to process stock movement', 'danger');
+        }
+      } catch (error) {
+        console.error('Stock movement error:', error);
+        showAlert('Cannot connect to server. Please check your connection.', 'danger');
+      }
+    }
   </script>
 </body>
 </html>
