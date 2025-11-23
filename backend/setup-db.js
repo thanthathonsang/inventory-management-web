@@ -119,6 +119,22 @@ async function setupDatabase() {
     `);
     console.log('User requests table created or already exists');
 
+    // Create products table for inventory management
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS products (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        code VARCHAR(100) UNIQUE NOT NULL,
+        type VARCHAR(100) NOT NULL,
+        price DECIMAL(10, 2) NOT NULL,
+        quantity INT NOT NULL DEFAULT 0,
+        image LONGTEXT DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Products table created or already exists');
+
     // Check if admin user exists
     const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', ['admin']);
 
