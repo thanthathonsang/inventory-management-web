@@ -60,7 +60,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
           <span>Stock History</span>
         </a>
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+        <a href="reports.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
           <span>Reports</span>
         </a>
@@ -70,13 +70,9 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zM7 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"/></svg>
           <span>User Request</span>
         </a>
-
-        <div class="mt-6 text-xs text-slate-400 uppercase">Support</div>
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
-          <span>Help</span>
-        </a>
-        <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
-          <span>Settings</span>
+        <a href="user-list.html" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <span>User List</span>
         </a>
       </nav>
     </aside>
@@ -84,12 +80,7 @@
     <!-- Main content -->
     <div class="flex-1 flex flex-col">
       <!-- Header -->
-      <header class="flex items-center justify-between bg-white border-b border-gray-200 px-8 py-4">
-        <div class="relative">
-          <input type="text" placeholder="Search" class="w-96 px-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-sky-200" />
-          <svg class="w-5 h-5 absolute right-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z"/></svg>
-        </div>
-
+      <header class="flex items-center justify-end bg-white border-b border-gray-200 px-8 py-4">
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-3">
             <div id="avatarContainer" class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-lg font-bold overflow-hidden">
@@ -117,42 +108,42 @@
       <!-- Page content -->
       <div class="flex-1 overflow-auto px-8 py-8">
         <div class="max-w-7xl mx-auto">
-          <!-- Sales Summary Cards -->
+          <!-- Dashboard Stats Cards -->
           <div class="grid grid-cols-4 gap-4 mb-8">
             <div class="bg-white border border-gray-200 rounded-lg p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-slate-400 mb-1">Today's Sale</div>
-                  <div class="text-2xl font-bold text-slate-700">163.3k</div>
+                  <div class="text-xs text-slate-400 mb-1">Total Stock Value</div>
+                  <div id="totalStockValue" class="text-2xl font-bold text-slate-700">Loading...</div>
                 </div>
-                <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-2xl"></div>
+                <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-2xl">💰</div>
               </div>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-slate-400 mb-1">Yearly Total sales</div>
-                  <div class="text-2xl font-bold text-slate-700">$ 250,423</div>
+                  <div class="text-xs text-slate-400 mb-1">Total Products</div>
+                  <div id="totalProducts" class="text-2xl font-bold text-slate-700">0</div>
                 </div>
-                <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-2xl"></div>
+                <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-2xl">📦</div>
+              </div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6 cursor-pointer" onclick="window.location.href='inventory.html'">
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs text-slate-400 mb-1">Low Stock Items</div>
+                  <div id="lowStockCount" class="text-2xl font-bold text-red-600">0</div>
+                </div>
+                <div class="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center text-2xl">⚠️</div>
               </div>
             </div>
             <div class="bg-white border border-gray-200 rounded-lg p-6">
               <div class="flex items-center justify-between">
                 <div>
-                  <div class="text-xs text-slate-400 mb-1">Net income</div>
-                  <div class="text-2xl font-bold text-slate-700">$68.9k</div>
+                  <div class="text-xs text-slate-400 mb-1">Stock Movements</div>
+                  <div id="recentMovementsCount" class="text-2xl font-bold text-slate-700">0</div>
                 </div>
-                <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-2xl"></div>
-              </div>
-            </div>
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-              <div class="flex items-center justify-between">
-                <div>
-                  <div class="text-xs text-slate-400 mb-1">Products</div>
-                  <div class="text-2xl font-bold text-slate-700">343</div>
-                </div>
-                <div class="w-12 h-12 rounded-lg bg-pink-50 flex items-center justify-center text-2xl"></div>
+                <div class="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-2xl">📊</div>
               </div>
             </div>
           </div>
@@ -160,10 +151,10 @@
           <div class="grid grid-cols-3 gap-6">
             <!-- Main content (left, 2 cols) -->
             <div class="col-span-2 space-y-6">
-              <!-- Stock Report -->
+              <!-- Stock Report Chart -->
               <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-6">
-                  <h3 class="font-semibold text-slate-700">Stock Report</h3>
+                  <h3 class="font-semibold text-slate-700">Stock Movement Report (Last 12 Months)</h3>
                   <div class="flex gap-2">
                     <div class="flex items-center gap-2 text-sm">
                       <div class="w-3 h-3 rounded-full bg-sky-400"></div>
@@ -171,55 +162,34 @@
                     </div>
                     <div class="flex items-center gap-2 text-sm">
                       <div class="w-3 h-3 rounded-full bg-purple-400"></div>
-                      <span class="text-slate-600">Stock Out</span>
+                      <span class="text-slate-600">Stock out</span>
                     </div>
                   </div>
                 </div>
                 <canvas id="stockChart" height="80"></canvas>
               </div>
 
-              <!-- Sales Order Table -->
+              <!-- Recent Stock Movements -->
               <div class="bg-white border border-gray-200 rounded-lg p-6">
                 <div class="flex items-center justify-between mb-6">
-                  <h3 class="font-semibold text-slate-700">Sales Order</h3>
-                  <button class="text-sky-500 text-sm font-medium">Last 7 Days ▼</button>
+                  <h3 class="font-semibold text-slate-700">Recent Stock Movements</h3>
+                  <a href="stock-history.html" class="text-sky-500 text-sm font-medium hover:underline">View All →</a>
                 </div>
                 <div class="overflow-x-auto">
                   <table class="w-full text-sm">
                     <thead>
                       <tr class="border-b border-gray-200">
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Channel</th>
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Draft</th>
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Confirmed</th>
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Packed</th>
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Shipped</th>
-                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Invoiced</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Product</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Type</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Action</th>
+                        <th class="text-right py-3 px-4 text-slate-500 font-medium">Quantity</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Reference</th>
+                        <th class="text-left py-3 px-4 text-slate-500 font-medium">Date</th>
                       </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody id="recentMovementsTable" class="divide-y divide-gray-200">
                       <tr>
-                        <td class="py-3 px-4 text-slate-600">Direct Sales</td>
-                        <td class="py-3 px-4 text-slate-600">2</td>
-                        <td class="py-3 px-4 text-slate-600">32</td>
-                        <td class="py-3 px-4 text-slate-600">42</td>
-                        <td class="py-3 px-4 text-slate-600">23</td>
-                        <td class="py-3 px-4 text-slate-600">7</td>
-                      </tr>
-                      <tr>
-                        <td class="py-3 px-4 text-slate-600">Wholesale</td>
-                        <td class="py-3 px-4 text-slate-600">0</td>
-                        <td class="py-3 px-4 text-slate-600">41</td>
-                        <td class="py-3 px-4 text-slate-600">33</td>
-                        <td class="py-3 px-4 text-slate-600">11</td>
-                        <td class="py-3 px-4 text-slate-600">14</td>
-                      </tr>
-                      <tr>
-                        <td class="py-3 px-4 text-slate-600">Retail</td>
-                        <td class="py-3 px-4 text-slate-600">2</td>
-                        <td class="py-3 px-4 text-slate-600">12</td>
-                        <td class="py-3 px-4 text-slate-600">25</td>
-                        <td class="py-3 px-4 text-slate-600">16</td>
-                        <td class="py-3 px-4 text-slate-600">21</td>
+                        <td colspan="6" class="text-center py-4 text-slate-400">Loading...</td>
                       </tr>
                     </tbody>
                   </table>
@@ -229,37 +199,18 @@
 
             <!-- Right Panel -->
             <div class="space-y-6">
-              <!-- Quick Actions -->
+              <!-- Low Stock Items -->
               <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 class="font-semibold text-slate-700 mb-4">Quick Actions</h3>
-                <div class="space-y-3">
-                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Create Order</span>
-                    <span class="ml-auto text-xs text-slate-400">ctrl + o</span>
-                  </button>
-                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Add Product</span>
-                    <span class="ml-auto text-xs text-slate-400">ctrl + p</span>
-                  </button>
-                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Add Supplier</span>
-                    <span class="ml-auto text-xs text-slate-400">ctrl + k</span>
-                  </button>
-                  <button class="w-full flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-slate-50 text-slate-600 text-sm">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2z"/></svg>
-                    <span>Export</span>
-                    <span class="ml-auto text-xs text-slate-400">ctrl + s</span>
-                  </button>
+                <h3 class="font-semibold text-slate-700 mb-4">Low Stock Items (&lt; 50 units)</h3>
+                <div id="lowStockList" class="space-y-3 max-h-96 overflow-y-auto">
+                  <div class="text-center py-4 text-slate-400 text-sm">Loading...</div>
                 </div>
               </div>
 
-              <!-- Fast Moving Items -->
+              <!-- Top Selling Products -->
               <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 class="font-semibold text-slate-700 mb-4">Latest Products</h3>
-                <div id="latestProductsList" class="space-y-3">
+                <h3 class="font-semibold text-slate-700 mb-4">Top Selling Products</h3>
+                <div id="topSellingList" class="space-y-3 max-h-96 overflow-y-auto">
                   <div class="text-center py-4 text-slate-400 text-sm">Loading...</div>
                 </div>
               </div>
@@ -342,68 +293,92 @@
       }
     }
 
-    // Load latest products
-    async function loadLatestProducts() {
+    // Global chart variable
+    let stockChart = null;
+
+    // Load dashboard data
+    async function loadDashboardData() {
+      await Promise.all([
+        loadDashboardStats(),
+        loadMonthlyMovements(),
+        loadRecentMovements(),
+        loadLowStockItems(),
+        loadTopSelling()
+      ]);
+    }
+
+    // Load dashboard statistics
+    async function loadDashboardStats() {
       try {
-        const response = await fetch('http://localhost:5000/api/inventory/products');
+        const response = await fetch('http://localhost:5000/api/dashboard/stats');
         const data = await response.json();
 
-        if (data.success) {
-          // Get latest 8 products (sorted by created_at DESC)
-          const latestProducts = data.products
-            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-            .slice(0, 8);
-
-          displayLatestProducts(latestProducts);
+        if (data.success && data.stats) {
+          const stats = data.stats;
+          
+          // Update stat cards
+          document.getElementById('totalStockValue').textContent = 
+            '$' + stats.totalStockValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+          
+          document.getElementById('totalProducts').textContent = stats.totalProducts.toLocaleString();
+          document.getElementById('lowStockCount').textContent = stats.lowStockCount;
         }
       } catch (error) {
-        console.error('Load latest products error:', error);
-        document.getElementById('latestProductsList').innerHTML = 
-          '<div class="text-center py-4 text-slate-400 text-sm">Unable to load products</div>';
+        console.error('Load dashboard stats error:', error);
+        document.getElementById('totalStockValue').textContent = 'Error';
+        document.getElementById('totalProducts').textContent = '0';
+        document.getElementById('lowStockCount').textContent = '0';
       }
     }
 
-    // Display latest products
-    function displayLatestProducts(products) {
-      const container = document.getElementById('latestProductsList');
+    // Load monthly movements for chart
+    async function loadMonthlyMovements() {
+      try {
+        const response = await fetch('http://localhost:5000/api/dashboard/monthly-movements');
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          const chartData = data.data;
+          
+          // Format month labels (YYYY-MM -> MMM YY)
+          const labels = chartData.months.map(m => {
+            const [year, month] = m.split('-');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${monthNames[parseInt(month) - 1]} ${year.slice(2)}`;
+          });
+
+          renderStockChart(labels, chartData.stockIn, chartData.stockOut);
+        }
+      } catch (error) {
+        console.error('Load monthly movements error:', error);
+      }
+    }
+
+    // Render stock chart
+    function renderStockChart(labels, stockInData, stockOutData) {
+      const ctx = document.getElementById('stockChart');
       
-      if (products.length === 0) {
-        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">No products yet</div>';
-        return;
+      if (!ctx) return;
+
+      // Destroy existing chart if exists
+      if (stockChart) {
+        stockChart.destroy();
       }
 
-      container.innerHTML = products.map(product => `
-        <div class="flex items-center gap-3">
-          <img src="${product.image || 'https://via.placeholder.com/32'}" alt="${product.name}" class="w-8 h-8 rounded-full object-cover bg-gray-200" />
-          <div class="flex-1 min-w-0">
-            <span class="text-sm text-slate-700 font-medium block truncate">${product.name}</span>
-            <span class="text-xs text-slate-400">${product.type}</span>
-          </div>
-          <span class="text-xs text-slate-500 whitespace-nowrap">$${parseFloat(product.price).toFixed(2)}</span>
-        </div>
-      `).join('');
-    }
-
-    // Load latest products on page load
-    loadLatestProducts();
-
-    // Chart data
-    const ctx = document.getElementById('stockChart');
-    if (ctx) {
-      new Chart(ctx, {
+      stockChart = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          labels: labels,
           datasets: [
             {
-              label: 'Stock In',
-              data: [5000, 8000, 7000, 9000, 6000, 7500, 8500, 7000, 8000, 6500, 7000, 5500],
+              label: 'Stock IN',
+              data: stockInData,
               backgroundColor: '#60a5fa',
               borderRadius: 4
             },
             {
-              label: 'Stock Out',
-              data: [3000, 5000, 4500, 6000, 4000, 5000, 6000, 4500, 5500, 4000, 4500, 3500],
+              label: 'Stock OUT',
+              data: stockOutData,
               backgroundColor: '#a78bfa',
               borderRadius: 4
             }
@@ -413,13 +388,161 @@
           responsive: true,
           maintainAspectRatio: true,
           scales: {
-            x: { stacked: true, grid: { display: false } },
-            y: { stacked: true, beginAtZero: true }
+            x: { grid: { display: false } },
+            y: { beginAtZero: true }
           },
-          plugins: { legend: { display: false } }
+          plugins: { 
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' units';
+                }
+              }
+            }
+          }
         }
       });
     }
+
+    // Load recent stock movements
+    async function loadRecentMovements() {
+      try {
+        const response = await fetch('http://localhost:5000/api/dashboard/recent-movements?limit=10');
+        const data = await response.json();
+
+        if (data.success) {
+          document.getElementById('recentMovementsCount').textContent = data.movements.length;
+          displayRecentMovements(data.movements);
+        }
+      } catch (error) {
+        console.error('Load recent movements error:', error);
+        document.getElementById('recentMovementsTable').innerHTML = 
+          '<tr><td colspan="6" class="text-center py-4 text-slate-400">Unable to load movements</td></tr>';
+      }
+    }
+
+    // Display recent movements
+    function displayRecentMovements(movements) {
+      const tbody = document.getElementById('recentMovementsTable');
+      
+      if (movements.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-400">No movements yet</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = movements.map(m => {
+        const date = new Date(m.created_at);
+        const formattedDate = date.toLocaleDateString('en-GB');
+        const typeColor = m.transaction_type === 'IN' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50';
+        
+        return `
+          <tr>
+            <td class="py-3 px-4">
+              <div class="flex items-center gap-2">
+                <img src="${m.product_image || 'https://via.placeholder.com/32'}" alt="${m.product_name}" class="w-8 h-8 rounded object-cover bg-gray-200" />
+                <span class="text-slate-700 font-medium">${m.product_name || 'Unknown'}</span>
+              </div>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-1 text-xs rounded-full bg-slate-100 text-slate-600">${m.product_type || '-'}</span>
+            </td>
+            <td class="py-3 px-4">
+              <span class="px-2 py-1 text-xs rounded-full ${typeColor} font-medium">${m.transaction_type}</span>
+            </td>
+            <td class="py-3 px-4 text-right font-medium text-slate-700">${m.quantity.toLocaleString()}</td>
+            <td class="py-3 px-4 text-slate-600 text-xs">${m.reference_number || '-'}</td>
+            <td class="py-3 px-4 text-slate-600 text-xs">${formattedDate}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Load low stock items
+    async function loadLowStockItems() {
+      try {
+        const response = await fetch('http://localhost:5000/api/dashboard/stats');
+        const data = await response.json();
+
+        if (data.success && data.stats) {
+          displayLowStockItems(data.stats.lowStockItems);
+        }
+      } catch (error) {
+        console.error('Load low stock items error:', error);
+        document.getElementById('lowStockList').innerHTML = 
+          '<div class="text-center py-4 text-slate-400 text-sm">Unable to load items</div>';
+      }
+    }
+
+    // Display low stock items
+    function displayLowStockItems(items) {
+      const container = document.getElementById('lowStockList');
+      
+      if (items.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-green-600 text-sm">✓ All items well stocked!</div>';
+        return;
+      }
+
+      container.innerHTML = items.map(item => `
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50">
+          <img src="${item.image || 'https://via.placeholder.com/40'}" alt="${item.name}" class="w-10 h-10 rounded object-cover bg-gray-200" />
+          <div class="flex-1 min-w-0">
+            <div class="text-sm text-slate-700 font-medium truncate">${item.name}</div>
+            <div class="text-xs text-slate-400">${item.code}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-red-600">${item.quantity}</div>
+            <div class="text-xs text-slate-400">units</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load top selling products
+    async function loadTopSelling() {
+      try {
+        const response = await fetch('http://localhost:5000/api/dashboard/top-selling?limit=10');
+        const data = await response.json();
+
+        if (data.success) {
+          displayTopSelling(data.topSelling);
+        }
+      } catch (error) {
+        console.error('Load top selling error:', error);
+        document.getElementById('topSellingList').innerHTML = 
+          '<div class="text-center py-4 text-slate-400 text-sm">Unable to load items</div>';
+      }
+    }
+
+    // Display top selling products
+    function displayTopSelling(items) {
+      const container = document.getElementById('topSellingList');
+      
+      if (items.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">No sales data yet</div>';
+        return;
+      }
+
+      container.innerHTML = items.map((item, index) => `
+        <div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50">
+          <div class="w-6 h-6 rounded-full ${index < 3 ? 'bg-yellow-100 text-yellow-600' : 'bg-slate-100 text-slate-600'} flex items-center justify-center text-xs font-bold">
+            ${index + 1}
+          </div>
+          <img src="${item.image || 'https://via.placeholder.com/40'}" alt="${item.name}" class="w-10 h-10 rounded object-cover bg-gray-200" />
+          <div class="flex-1 min-w-0">
+            <div class="text-sm text-slate-700 font-medium truncate">${item.name}</div>
+            <div class="text-xs text-slate-400">${item.brand || item.type}</div>
+          </div>
+          <div class="text-right">
+            <div class="text-sm font-bold text-green-600">${parseInt(item.total_sold).toLocaleString()}</div>
+            <div class="text-xs text-slate-400">sold</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load all dashboard data on page load
+    loadDashboardData();
   </script>
 </body>
 </html>

@@ -133,6 +133,19 @@ router.post('/login', async (req, res) => {
     const connection = await pool.getConnection();
 
     try {
+      // First check if user exists in user_requests (pending approval)
+      const [pendingRequests] = await connection.query(
+        'SELECT id FROM user_requests WHERE BINARY username = ? AND processed = 0',
+        [username]
+      );
+
+      if (pendingRequests.length > 0) {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'บัญชีของคุณรอการยืนยันจากผู้ดูแลระบบ กรุณารอการอนุมัติ'
+        });
+      }
+
       // Query user from database with BINARY for case-sensitive comparison
       const [rows] = await connection.query(
         'SELECT id, username, password, role FROM users WHERE BINARY username = ?',
@@ -140,21 +153,21 @@ router.post('/login', async (req, res) => {
       );
 
       if (rows.length === 0) {
-        return res.status(401).json({ success: false, message: 'Invalid username or password' });
+        return res.status(401).json({ success: false, message: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
       }
 
       const user = rows[0];
 
       // Verify exact case-sensitive match
       if (user.username !== username) {
-        return res.status(401).json({ success: false, message: 'Invalid username or password' });
+        return res.status(401).json({ success: false, message: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
       }
 
       // Compare password with bcrypt hash
       const isPasswordValid = await bcrypt.compare(password, user.password);
 
       if (!isPasswordValid) {
-        return res.status(401).json({ success: false, message: 'Invalid username or password' });
+        return res.status(401).json({ success: false, message: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' });
       }
 
       // Login successful
@@ -615,6 +628,43 @@ router.post('/create-user-direct', async (req, res) => {
     }
   } catch (error) {
     console.error('Create user error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Get all users (for User List page)
+router.get('/users', async (req, res) => {
+  try {
+    const [users] = await pool.query(
+      'SELECT id, username, email, role, created_at FROM users ORDER BY created_at DESC'
+    );
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error('Get users error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Update user role
+router.put('/users/:id/role', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { role } = req.body;
+
+    // Validate role
+    if (!['user', 'staff', 'admin'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' });
+    }
+
+    // Update user role
+    await pool.query(
+      'UPDATE users SET role = ? WHERE id = ?',
+      [role, userId]
+    );
+
+    res.json({ success: true, message: 'Role updated successfully' });
+  } catch (error) {
+    console.error('Update role error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
