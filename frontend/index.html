@@ -254,36 +254,9 @@
 
               <!-- Fast Moving Items -->
               <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 class="font-semibold text-slate-700 mb-4">Fast Moving Items</h3>
-                <div class="space-y-3">
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Macbook Pro</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">iPhone 14 pro</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Zoom75</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Airpods Pro</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Samsung Galaxy Fold</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Samsung Odyssey</span>
-                  </div>
-                  <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gray-200"></div>
-                    <span class="text-sm text-slate-600">Logitech Superlight</span>
-                  </div>
+                <h3 class="font-semibold text-slate-700 mb-4">Latest Products</h3>
+                <div id="latestProductsList" class="space-y-3">
+                  <div class="text-center py-4 text-slate-400 text-sm">Loading...</div>
                 </div>
               </div>
             </div>
@@ -364,6 +337,51 @@
         window.location.href = "login.html";
       }
     }
+
+    // Load latest products
+    async function loadLatestProducts() {
+      try {
+        const response = await fetch('http://localhost:5000/api/inventory/products');
+        const data = await response.json();
+
+        if (data.success) {
+          // Get latest 8 products (sorted by created_at DESC)
+          const latestProducts = data.products
+            .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+            .slice(0, 8);
+
+          displayLatestProducts(latestProducts);
+        }
+      } catch (error) {
+        console.error('Load latest products error:', error);
+        document.getElementById('latestProductsList').innerHTML = 
+          '<div class="text-center py-4 text-slate-400 text-sm">Unable to load products</div>';
+      }
+    }
+
+    // Display latest products
+    function displayLatestProducts(products) {
+      const container = document.getElementById('latestProductsList');
+      
+      if (products.length === 0) {
+        container.innerHTML = '<div class="text-center py-4 text-slate-400 text-sm">No products yet</div>';
+        return;
+      }
+
+      container.innerHTML = products.map(product => `
+        <div class="flex items-center gap-3">
+          <img src="${product.image || 'https://via.placeholder.com/32'}" alt="${product.name}" class="w-8 h-8 rounded-full object-cover bg-gray-200" />
+          <div class="flex-1 min-w-0">
+            <span class="text-sm text-slate-700 font-medium block truncate">${product.name}</span>
+            <span class="text-xs text-slate-400">${product.type}</span>
+          </div>
+          <span class="text-xs text-slate-500 whitespace-nowrap">$${parseFloat(product.price).toFixed(2)}</span>
+        </div>
+      `).join('');
+    }
+
+    // Load latest products on page load
+    loadLatestProducts();
 
     // Chart data
     const ctx = document.getElementById('stockChart');

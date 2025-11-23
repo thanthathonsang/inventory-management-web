@@ -126,6 +126,7 @@ async function setupDatabase() {
         name VARCHAR(255) NOT NULL,
         code VARCHAR(100) UNIQUE NOT NULL,
         type VARCHAR(100) NOT NULL,
+        brand VARCHAR(100) DEFAULT NULL,
         price DECIMAL(10, 2) NOT NULL,
         quantity INT NOT NULL DEFAULT 0,
         image LONGTEXT DEFAULT NULL,
@@ -134,6 +135,36 @@ async function setupDatabase() {
       )
     `);
     console.log('Products table created or already exists');
+
+    // Add brand column if it doesn't exist
+    try {
+      const [brandCheck] = await connection.query(
+        "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'products' AND COLUMN_NAME = 'brand'",
+        [process.env.DB_NAME]
+      );
+      if (brandCheck.length === 0) {
+        await connection.query(`ALTER TABLE products ADD COLUMN brand VARCHAR(100) DEFAULT NULL AFTER type`);
+        console.log('Brand column added to products table');
+      }
+    } catch (err) {
+      console.error('Error adding brand column:', err);
+    }
+
+    // Create stock_transactions table for stock in/out history
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS stock_transactions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        transaction_type ENUM('in', 'out') NOT NULL,
+        quantity INT NOT NULL,
+        reference_number VARCHAR(100) DEFAULT NULL,
+        notes TEXT DEFAULT NULL,
+        created_by VARCHAR(50) DEFAULT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+      )
+    `);
+    console.log('Stock transactions table created or already exists');
 
     // Check if admin user exists
     const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', ['admin']);

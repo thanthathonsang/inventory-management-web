@@ -162,6 +162,7 @@
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Name</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Code</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Type</th>
+                    <th class="text-left py-3 px-4 text-slate-600 font-medium">Brand</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Price</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Quantity</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Actions</th>
@@ -191,8 +192,8 @@
             <input type="text" id="productName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-2">Product Code <span class="text-xs text-gray-500">(Auto-generated)</span></label>
-            <input type="text" id="productCode" required readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed" />
+            <label class="block text-sm font-medium text-slate-700 mb-2">Product Code <span class="text-xs text-gray-500">(Auto-generated or custom)</span></label>
+            <input type="text" id="productCode" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" placeholder="Auto-generated from name" />
           </div>
         </div>
 
@@ -202,8 +203,19 @@
             <input type="text" id="productType" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" placeholder="e.g., Laptop, Phone, Keyboard" />
           </div>
           <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Brand</label>
+            <input type="text" id="productBrand" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" placeholder="e.g., Apple, Samsung, Logitech" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
             <label class="block text-sm font-medium text-slate-700 mb-2">Price ($)</label>
             <input type="number" id="productPrice" step="0.01" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-2">Quantity</label>
+            <input type="number" id="productQuantity" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-200" />
           </div>
         </div>
 
@@ -440,7 +452,7 @@
       resultCount.textContent = products.length;
       
       if (products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-slate-400">No products found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-8 text-slate-400">No products found</td></tr>';
         return;
       }
 
@@ -452,6 +464,7 @@
           <td class="py-3 px-4 text-slate-700">${product.name}</td>
           <td class="py-3 px-4 text-slate-600">${product.code}</td>
           <td class="py-3 px-4 text-slate-600">${product.type}</td>
+          <td class="py-3 px-4 text-slate-600">${product.brand || '-'}</td>
           <td class="py-3 px-4 text-slate-700 font-medium">$${parseFloat(product.price).toFixed(2)}</td>
           <td class="py-3 px-4 text-slate-600">${product.quantity}</td>
           <td class="py-3 px-4">
@@ -492,12 +505,13 @@
       displayProducts(filtered);
     });
 
-    // Auto-generate product code from product name
+    // Auto-generate product code from name (only if code field is empty)
     async function generateProductCodeFromName() {
       const productName = document.getElementById('productName').value.trim();
+      const currentCode = document.getElementById('productCode').value.trim();
       
-      if (!productName) {
-        document.getElementById('productCode').value = '';
+      // Only auto-generate if code field is empty
+      if (!productName || currentCode) {
         return;
       }
 
@@ -579,6 +593,29 @@
       }
     });
 
+    // Auto-capitalize first letter of Brand field
+    document.getElementById('productBrand').addEventListener('input', (e) => {
+      const input = e.target;
+      const value = input.value;
+      
+      if (value.length > 0) {
+        // Capitalize first letter of each word
+        const capitalized = value.split(' ').map(word => {
+          if (word.length > 0) {
+            return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+          }
+          return word;
+        }).join(' ');
+        
+        // Only update if different to avoid cursor jumping
+        if (value !== capitalized) {
+          const cursorPosition = input.selectionStart;
+          input.value = capitalized;
+          input.setSelectionRange(cursorPosition, cursorPosition);
+        }
+      }
+    });
+
     // Modal functions
     function openAddModal() {
       document.getElementById('modalTitle').textContent = 'Add New Product';
@@ -601,6 +638,7 @@
           document.getElementById('productName').value = product.name;
           document.getElementById('productCode').value = product.code;
           document.getElementById('productType').value = product.type;
+          document.getElementById('productBrand').value = product.brand || '';
           document.getElementById('productPrice').value = product.price;
           document.getElementById('productQuantity').value = product.quantity;
           
@@ -722,6 +760,7 @@
         name: document.getElementById('productName').value,
         code: document.getElementById('productCode').value,
         type: document.getElementById('productType').value,
+        brand: document.getElementById('productBrand').value || null,
         price: document.getElementById('productPrice').value,
         quantity: document.getElementById('productQuantity').value,
         image: imageBase64
