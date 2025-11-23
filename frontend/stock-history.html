@@ -249,6 +249,7 @@
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Product</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Code</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Brand</th>
+                    <th class="text-left py-3 px-4 text-slate-600 font-medium">Price</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Type</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Quantity</th>
                     <th class="text-left py-3 px-4 text-slate-600 font-medium">Reference</th>
@@ -258,7 +259,7 @@
                 </thead>
                 <tbody id="transactionsTableBody" class="divide-y divide-gray-200">
                   <tr>
-                    <td colspan="9" class="text-center py-8 text-slate-400">Loading transactions...</td>
+                    <td colspan="10" class="text-center py-8 text-slate-400">Loading transactions...</td>
                   </tr>
                 </tbody>
               </table>
@@ -438,25 +439,26 @@
       const tbody = document.getElementById('transactionsTableBody');
       
       if (transactions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-8 text-slate-400">No transactions found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center py-8 text-slate-400">No transactions found</td></tr>';
         return;
       }
 
       tbody.innerHTML = transactions.map(txn => `
         <tr class="hover:bg-slate-50">
-          <td class="py-3 px-4 text-slate-600">${formatDateTime(txn.created_at)}</td>
+          <td class="py-3 px-4 text-slate-600 whitespace-nowrap">${formatDateTime(txn.created_at)}</td>
           <td class="py-3 px-4 text-slate-700 font-medium">${txn.product_name || '-'}</td>
-          <td class="py-3 px-4 text-slate-600">${txn.product_code || '-'}</td>
+          <td class="py-3 px-4 text-slate-600 whitespace-nowrap">${txn.product_code || '-'}</td>
           <td class="py-3 px-4 text-slate-600">${txn.product_brand || '-'}</td>
-          <td class="py-3 px-4">
-            <span class="px-2 py-1 rounded-full text-xs font-medium ${txn.transaction_type === 'in' ? 'badge-in' : 'badge-out'}">
+          <td class="py-3 px-4 text-slate-700 font-medium">$${txn.product_price ? parseFloat(txn.product_price).toFixed(2) : '0.00'}</td>
+          <td class="py-3 px-4 whitespace-nowrap">
+            <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap ${txn.transaction_type === 'in' ? 'badge-in' : 'badge-out'}">
               ${txn.transaction_type === 'in' ? '↑ Stock In' : '↓ Stock Out'}
             </span>
           </td>
-          <td class="py-3 px-4 text-slate-700 font-semibold">${txn.quantity}</td>
-          <td class="py-3 px-4 text-slate-600">${txn.reference_number || '-'}</td>
+          <td class="py-3 px-4 text-slate-700 font-semibold text-center">${txn.quantity}</td>
+          <td class="py-3 px-4 text-slate-600 whitespace-nowrap">${txn.reference_number || '-'}</td>
           <td class="py-3 px-4 text-slate-600 max-w-xs truncate" title="${txn.notes || '-'}">${txn.notes || '-'}</td>
-          <td class="py-3 px-4 text-slate-600">${txn.created_by || '-'}</td>
+          <td class="py-3 px-4 text-slate-600 whitespace-nowrap">${txn.created_by || '-'}</td>
         </tr>
       `).join('');
     }
@@ -543,12 +545,13 @@
         return;
       }
 
-      const headers = ['Date & Time', 'Product', 'Code', 'Brand', 'Type', 'Quantity', 'Reference', 'Notes', 'Created By'];
+      const headers = ['Date & Time', 'Product', 'Code', 'Brand', 'Price', 'Type', 'Quantity', 'Reference', 'Notes', 'Created By'];
       const rows = allTransactions.map(txn => [
         formatDateTime(txn.created_at),
         txn.product_name || '-',
         txn.product_code || '-',
         txn.product_brand || '-',
+        txn.product_price ? parseFloat(txn.product_price).toFixed(2) : '0.00',
         txn.transaction_type === 'in' ? 'Stock In' : 'Stock Out',
         txn.quantity,
         txn.reference_number || '-',

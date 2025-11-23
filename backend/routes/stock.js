@@ -12,7 +12,8 @@ router.get('/transactions', async (req, res) => {
         st.*,
         p.name as product_name,
         p.code as product_code,
-        p.brand as product_brand
+        p.brand as product_brand,
+        p.price as product_price
       FROM stock_transactions st
       JOIN products p ON st.product_id = p.id
       WHERE 1=1
@@ -336,6 +337,64 @@ router.post('/bulk', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to process bulk operations' });
   } finally {
     connection.release();
+  }
+});
+
+// Delete all stock transactions
+router.delete('/transactions', async (req, res) => {
+  try {
+    // Get count before delete
+    const [countResult] = await pool.query('SELECT COUNT(*) as total FROM stock_transactions');
+    const deletedCount = countResult[0].total;
+
+    // Delete all stock transactions
+    await pool.query('DELETE FROM stock_transactions');
+    
+    // Reset auto-increment
+    await pool.query('ALTER TABLE stock_transactions AUTO_INCREMENT = 1');
+
+    res.json({ 
+      success: true, 
+      message: 'All stock transactions deleted successfully',
+      deletedCount: deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all stock transactions error:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete all stock transactions', error: error.message });
+  }
+});
+
+// Delete stock transaction by ID
+router.delete('/transactions/:id', async (req, res) => {
+  try {
+    const transactionId = req.params.id;
+
+    // Check if transaction exists
+    const [existing] = await pool.query('SELECT * FROM stock_transactions WHERE id = ?', [transactionId]);
+    if (existing.length === 0) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+
+    const transaction = existing[0];
+
+    // Delete transaction
+    await pool.query('DELETE FROM stock_transactions WHERE id = ?', [transactionId]);
+
+    // Update product quantity (reverse the transaction)
+    if (transaction.transaction_type === 'in') {
+      // If it was stock in, decrease quantity
+      await pool.query('UPDATE products SET quantity = quantity - ? WHERE id = ?', 
+        [transaction.quantity, transaction.product_id]);
+    } else {
+      // If it was stock out, increase quantity
+      await pool.query('UPDATE products SET quantity = quantity + ? WHERE id = ?', 
+        [transaction.quantity, transaction.product_id]);
+    }
+
+    res.json({ success: true, message: 'Transaction deleted successfully' });
+  } catch (error) {
+    console.error('Delete transaction error:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete transaction' });
   }
 });
 

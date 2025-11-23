@@ -79,7 +79,7 @@ router.post('/products', async (req, res) => {
     // Process each product
     for (let i = 0; i < products.length; i++) {
       try {
-        let { name, code, type, brand, price, quantity, image } = products[i];
+        let { name, code, type, brand, price, quantity, date, image } = products[i];
         
         // Auto-generate code if not provided or empty
         if (!code || code.trim() === '') {
@@ -95,8 +95,8 @@ router.post('/products', async (req, res) => {
         
         // Insert new product
         const [result] = await pool.query(
-          'INSERT INTO products (name, code, type, brand, price, quantity, image) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [name, code, type, brand, price, quantity, image || null]
+          'INSERT INTO products (name, code, type, brand, price, quantity, created_at, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          [name, code, type, brand, price, quantity, date || null, image || null]
         );
         
         results.push({
@@ -145,7 +145,7 @@ router.post('/products', async (req, res) => {
 // Update product
 router.put('/products/:id', async (req, res) => {
   try {
-    const { name, code, type, brand, price, quantity, image } = req.body;
+    const { name, code, type, brand, price, quantity, date, image } = req.body;
     const productId = req.params.id;
 
     // Validate required fields
@@ -167,8 +167,8 @@ router.put('/products/:id', async (req, res) => {
 
     // Update product
     await pool.query(
-      'UPDATE products SET name = ?, code = ?, type = ?, brand = ?, price = ?, quantity = ?, image = ? WHERE id = ?',
-      [name, code, type, brand, price, quantity, image || null, productId]
+      'UPDATE products SET name = ?, code = ?, type = ?, brand = ?, price = ?, quantity = ?, created_at = ?, image = ? WHERE id = ?',
+      [name, code, type, brand, price, quantity, date || null, image || null, productId]
     );
 
     res.json({ success: true, message: 'Product updated successfully' });
@@ -178,7 +178,35 @@ router.put('/products/:id', async (req, res) => {
   }
 });
 
-// Delete product
+// Delete all products
+router.delete('/products', async (req, res) => {
+  try {
+    // Get count before delete
+    const [countResult] = await pool.query('SELECT COUNT(*) as total FROM products');
+    const deletedCount = countResult[0].total;
+
+    // Delete related stock transactions first
+    await pool.query('DELETE FROM stock_transactions');
+    
+    // Delete all products
+    await pool.query('DELETE FROM products');
+    
+    // Reset auto-increment
+    await pool.query('ALTER TABLE products AUTO_INCREMENT = 1');
+    await pool.query('ALTER TABLE stock_transactions AUTO_INCREMENT = 1');
+
+    res.json({ 
+      success: true, 
+      message: 'All products and stock transactions deleted successfully',
+      deletedCount: deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all products error:', error);
+    res.status(500).json({ success: false, message: 'Failed to delete all products', error: error.message });
+  }
+});
+
+// Delete product by ID
 router.delete('/products/:id', async (req, res) => {
   try {
     const productId = req.params.id;
