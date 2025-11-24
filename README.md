@@ -40,7 +40,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 SMTP_FROM=your-email@gmail.com
-FRONTEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:8080
 ```
 
 #### Option 2: Using other SMTP providers
@@ -52,7 +52,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@outlook.com
 SMTP_PASS=your-password
 SMTP_FROM=your-email@outlook.com
-FRONTEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:8080
 ```
 
 Example for custom SMTP server:
@@ -63,7 +63,7 @@ SMTP_SECURE=false
 SMTP_USER=your-username
 SMTP_PASS=your-password
 SMTP_FROM=no-reply@yourdomain.com
-FRONTEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:8080
 ```
 
 ### 3. Setup Database and Create Tables
@@ -89,23 +89,18 @@ The server will run on `http://localhost:5000`
 
 ## Frontend Setup
 
-### 1. Open Frontend
-Simply open the `frontend/login.html` file in your browser or serve it with a local server.
-
-**Using Python:**
-```bash
-cd frontend
-python -m http.server 8000
-```
-
-Then navigate to `http://localhost:8000/login.html`
-
-**Using Node.js (http-server):**
+### 1. Install http-server (if not already installed)
 ```bash
 npm install -g http-server
-cd frontend
-http-server
 ```
+
+### 2. Start Frontend Server
+```bash
+cd frontend
+http-server -p 8080
+```
+
+Then navigate to `http://localhost:8080/login.html`
 
 ## Login Credentials
 - **Username:** admin
