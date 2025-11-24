@@ -3,84 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- ===== CSS ===== -->
-    <link rel="stylesheet" href="assets/css/style.css" />
-
-    <!-- ===== BOX ICONS ===== -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css"
-      rel="stylesheet"
-    />
-
-    <title>Register</title>
+    <title>Doraemon Inventory - Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Poppins', sans-serif; }
+    </style>
   </head>
-  <body>
-    <div class="l-form">
-      <div class="shape1"></div>
-      <div class="shape2"></div>
+  <body class="bg-gray-50">
+    <div class="flex flex-col justify-center sm:h-screen p-4">
+      <div class="max-w-md w-full mx-auto border border-gray-300 rounded-2xl p-8">
+        <div class="text-center mb-12">
+          <h1 class="text-4xl font-extrabold text-purple-600">Doraemon Inventory</h1>
+        </div>
 
-      <div class="form">
-        <img src="assets/img/authentication.svg" alt="" class="form__img" />
-
-        <!-- ===== REGISTER FORM ===== -->
-        <form class="form__content" onsubmit="return handleRegister(event)">
-          <h1 class="form__title">Create account</h1>
-
-          <div class="form__div form__div-one">
-            <div class="form__icon">
-              <i class="bx bx-user-circle"></i>
+        <form onsubmit="return handleRegister(event)">
+          <div class="space-y-6">
+            <div>
+              <label class="text-slate-900 text-sm font-medium mb-2 block">Username</label>
+              <input id="username" name="username" type="text" required class="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500 focus:ring-2 focus:ring-blue-500" placeholder="Enter username" />
             </div>
-
-            <div class="form__div-input">
-              <label class="form__label">Username</label>
-              <input type="text" id="username" class="form__input" required />
+            <div>
+              <label class="text-slate-900 text-sm font-medium mb-2 block">Email Id</label>
+              <input id="email" name="email" type="email" required class="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500 focus:ring-2 focus:ring-blue-500" placeholder="Enter email" />
             </div>
-          </div>
-
-          <div class="form__div">
-            <div class="form__icon">
-              <i class="bx bx-envelope"></i>
+            <div>
+              <label class="text-slate-900 text-sm font-medium mb-2 block">Password</label>
+              <input id="password" name="password" type="password" required class="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500 focus:ring-2 focus:ring-blue-500" placeholder="Enter password" />
             </div>
-            <div class="form__div-input">
-              <label class="form__label">Email</label>
-              <input type="email" id="email" class="form__input" required />
+            <div>
+              <label class="text-slate-900 text-sm font-medium mb-2 block">Confirm Password</label>
+              <input id="confirm" name="cpassword" type="password" required class="text-slate-900 bg-white border border-gray-300 w-full text-sm px-4 py-3 rounded-md outline-blue-500 focus:ring-2 focus:ring-blue-500" placeholder="Enter confirm password" />
             </div>
           </div>
 
-          <div class="form__div">
-            <div class="form__icon">
-              <i class="bx bx-lock"></i>
-            </div>
-
-            <div class="form__div-input">
-              <label class="form__label">Password</label>
-              <input type="password" id="password" class="form__input" required />
-            </div>
+          <div class="mt-12">
+            <button type="submit" class="w-full py-3 px-4 text-sm tracking-wider font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none cursor-pointer transition-colors">
+              Create an account
+            </button>
           </div>
-
-          <div class="form__div">
-            <div class="form__icon">
-              <i class="bx bx-lock"></i>
-            </div>
-
-            <div class="form__div-input">
-              <label class="form__label">Confirm Password</label>
-              <input type="password" id="confirm" class="form__input" required />
-            </div>
-          </div>
-
-          <input type="submit" class="form__button btn-register" value="Register" />
-
-          <p style="margin-top:12px;text-align:center;">
-            <a href="login.html" class="form__forgot">Back to login</a>
-          </p>
+          <p class="text-slate-600 text-sm mt-6 text-center">Already have an account? <a href="login.html" class="text-blue-600 font-medium hover:underline ml-1">Login here</a></p>
         </form>
       </div>
     </div>
-
-    <!-- ===== MAIN JS ===== -->
-    <script src="assets/js/main.js"></script>
 
     <script>
       async function handleRegister(event) {
@@ -111,7 +76,7 @@
           const data = await response.json();
 
           if (response.ok && data.success) {
-            alert('Registration successful — you can now log in');
+            alert('Registration successful! Please wait for admin approval before logging in.');
             window.location.href = 'login.html';
           } else {
             alert(data.message || 'Registration failed');
