@@ -40,7 +40,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 SMTP_FROM=your-email@gmail.com
-FRONTEND_URL=http://localhost:8080
+FRONTEND_URL=http://localhost:8000
 ```
 
 #### Option 2: Using other SMTP providers
@@ -52,7 +52,7 @@ SMTP_SECURE=false
 SMTP_USER=your-email@outlook.com
 SMTP_PASS=your-password
 SMTP_FROM=your-email@outlook.com
-FRONTEND_URL=http://localhost:8080
+FRONTEND_URL=http://localhost:8000
 ```
 
 Example for custom SMTP server:
@@ -63,7 +63,7 @@ SMTP_SECURE=false
 SMTP_USER=your-username
 SMTP_PASS=your-password
 SMTP_FROM=no-reply@yourdomain.com
-FRONTEND_URL=http://localhost:8080
+FRONTEND_URL=http://localhost:8000
 ```
 
 ### 3. Setup Database and Create Tables

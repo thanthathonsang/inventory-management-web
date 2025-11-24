@@ -70,7 +70,17 @@ function switchReport(reportId) {
   
   // Show selected report
   document.getElementById(reportId).classList.add('active');
-  event.target.classList.add('active');
+  if (event && event.target) {
+    event.target.classList.add('active');
+  } else {
+    // If no event (direct call), find and activate the correct tab
+    const tabButton = Array.from(document.querySelectorAll('.tab-button')).find(btn => 
+      btn.getAttribute('onclick').includes(reportId)
+    );
+    if (tabButton) {
+      tabButton.classList.add('active');
+    }
+  }
   
   // Load data for the selected report
   switch(reportId) {
@@ -88,6 +98,18 @@ function switchReport(reportId) {
       break;
   }
 }
+
+// Check for hash in URL on page load
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = window.location.hash.substring(1); // Remove the # character
+  if (hash && ['stock-summary', 'low-stock', 'sales-analysis', 'inventory-valuation'].includes(hash)) {
+    switchReport(hash);
+  } else {
+    // Load default report
+    loadStockSummaryReport();
+  }
+});
+
 
 // Load filters for Stock Movement
 async function loadFilters() {
@@ -872,5 +894,5 @@ function exportValuationPDF() {
   doc.save('inventory-valuation-report.pdf');
 }
 
-// Initialize - Load first report
-loadStockSummaryReport();
+// Initialize - removed default loadStockSummaryReport() call
+// Now handled by DOMContentLoaded event listener with hash check

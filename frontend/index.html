@@ -20,18 +20,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    body { font-family: 'Poppins', sans-serif; }
+    body { 
+      font-family: 'Poppins', sans-serif;
+    }
+    
     /* Ensure brand logo uses the configured brand color even if other rules cascade */
     .text-brand {
       color: #6c2bd9 !important;
     }
+    
     /* If logo contains nested elements, ensure they inherit the brand color */
     .text-brand * {
       color: inherit !important;
     }
+    
     .dropdown-menu {
       display: none;
     }
+    
     .dropdown-menu.show {
       display: block;
     }
@@ -43,7 +49,7 @@
     <!-- Sidebar -->
     <aside class="w-72 bg-white border-r border-gray-200 py-8 px-6 h-screen overflow-y-auto">
       <div class="mb-10">
-        <div class="text-2xl font-extrabold text-brand">Doraemon <span class="text-brand">Inventory</span></div>
+        <img src="assets/img/logo.png" alt="Doraemon Inventory" class="w-full mx-auto" />
       </div>
 
       <nav class="space-y-2 text-sm text-slate-700">
@@ -128,7 +134,7 @@
                 <div class="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-2xl">📦</div>
               </div>
             </div>
-            <div class="bg-white border border-gray-200 rounded-lg p-6 cursor-pointer" onclick="window.location.href='inventory.html'">
+            <div class="bg-white border border-gray-200 rounded-lg p-6 cursor-pointer" onclick="window.location.href='reports.html#low-stock'">
               <div class="flex items-center justify-between">
                 <div>
                   <div class="text-xs text-slate-400 mb-1">Low Stock Items</div>
